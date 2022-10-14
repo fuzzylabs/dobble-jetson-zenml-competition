@@ -67,6 +67,7 @@ Directory Structure
     Initialize ZenML repo
 
     ```bash
+    cd zenml-pipelines
     zenml init
     ```
 
@@ -93,6 +94,5 @@ Directory Structure
     Run ZenML pipelines.
 
     ```bash
-    cd zenml-pipelines
     python3 run.py
     ```
