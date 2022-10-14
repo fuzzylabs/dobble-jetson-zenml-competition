@@ -36,12 +36,12 @@ Directory Structure
 ├── LICENSE
 ├── pyproject.toml
 ├── README.md
-├── setup-requirements.txt
+├── requirements.txt                 # dependencies required for zenml project
+├── setup-requirements.txt           # dependencies required for precommit
 └── zenml-pipelines
     ├── config_training_pipeline.yaml  # each pipeline will have one config file containing information regarding step and other configuration
     ├── pipelines                  # all pipelines inside this folder
     │   └── training_pipeline.py
-    ├── requirements.txt           # dependencies required for zenml project
     ├── run.py                     # main file where all pipelines can be run
     └── steps                      # all steps inside this folder
         └── data_preprocess_step.py
