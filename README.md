@@ -4,12 +4,12 @@
 
 ## One-time setup
 
-1. Create a virtual environment (conda, pip, virtualenv, poetry)
+1. Create a virtual environment (conda, pip, virtualenv, poetry). Recommened python version 3.8
 
 2. Install requirements and pre-commit required for setting up the project.
 
     ```bash
-    pip install setup-requirements.txt
+    pip install -r setup-requirements.txt
     pre-commit install
     ```
 
@@ -25,4 +25,14 @@
 
     ```bash
     pre-commit run --all-files
+    ```
+
+## ZenML Setup Local
+
+1. Create a virtual environment (conda, pip, virtualenv, poetry). Recommened python version 3.8
+
+2. Install requirements
+
+    ```bash
+    pip install -r requirements.txt
     ```
