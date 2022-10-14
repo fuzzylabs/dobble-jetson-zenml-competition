@@ -81,14 +81,14 @@ Directory Structure
     > **Note**
     > Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
 
-    By default zenml comes with a stack that runs locally. We will add mlflow as experiment tracker to this local stack. We use this stack to run all tests locally.
+    By default zenml comes with a stack that runs locally. We will add mlflow as experiment tracker to this local stack. We use this stack to test pipelines locally.
 
     ```bash
     zenml experiment-tracker register mlflow_tracker --flavor=mlflow
     zenml stack register fuzzy_stack \
         -a default \
         -o default \
-        -e mlflow_tracker
+        -e mlflow_tracker \
         --set
     ```
 
