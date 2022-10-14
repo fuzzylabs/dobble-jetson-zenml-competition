@@ -38,6 +38,7 @@ Directory Structure
 ├── README.md
 ├── setup-requirements.txt
 └── zenml-pipelines
+    ├── config_training_pipeline.yaml  # each pipeline will have one config file containing information regarding step and other configuration
     ├── pipelines                  # all pipelines inside this folder
     │   └── training_pipeline.py
     ├── requirements.txt           # dependencies required for zenml project
