@@ -58,17 +58,17 @@ Directory Structure
 
 3. Running ZenML Locally
 
-    Install ZenML integrations required for project
-
-    ```bash
-    zenml integration install -y pytorch mlflow
-    ```
-
     Initialize ZenML repo
 
     ```bash
     cd zenml-pipelines
     zenml init
+    ```
+
+    Install ZenML integrations required for project
+
+    ```bash
+    zenml integration install -y pytorch mlflow
     ```
 
     Start ZenServer
