@@ -1,0 +1,21 @@
+[tool.black]
+line-length = 80
+include = '\.pyi?$'
+exclude = '''
+/(
+	\.git
+| \.hg
+| \.mypy_cache
+| \.tox
+| \.venv
+| _build
+| buck-out
+| build
+)/
+'''
+
+[tool.isort]
+profile = "black"
+known_third_party = []
+skip_glob = []
+line_length = 80
