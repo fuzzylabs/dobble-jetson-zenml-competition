@@ -53,7 +53,6 @@ Directory Structure
 2. Install requirements
 
     ```bash
-    cd zenml-pipelines
     pip install -r requirements.txt
     ```
 
@@ -94,5 +93,6 @@ Directory Structure
     Run ZenML pipelines.
 
     ```bash
+    cd zenml-pipelines
     python3 run.py
     ```
