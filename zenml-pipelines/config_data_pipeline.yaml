@@ -4,7 +4,15 @@ settings:
     build_context_root: .
     requirements:
       - pillow==9.2.0
+      - labelbox[data]==3.27.2
 steps:
+  ingest_data:
+    enable_cache: false
+    parameters:
+      # Path to image directory containing images
+      image_base_dir: "data/dobble/images/"
+      # Path to labelbox export json file
+      labelbox_export_path: "data/dobble/"
   prepare_labels:
     enable_cache: false
     parameters:

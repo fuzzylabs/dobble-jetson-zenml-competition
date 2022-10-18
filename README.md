@@ -12,6 +12,11 @@
     pip install -r setup-requirements.txt
     pre-commit install
     ```
+    Or with Conda
+
+    ```bash
+    conda install -c conda-forge pre-commit
+    ```
 
     This will install different tools that we use for pre-commit hooks.
 
@@ -130,5 +135,5 @@ Directory Structure
     Run ZenML pipelines.
 
     ```bash
-    python3 run.py
+    python3 run.py -dp
     ```

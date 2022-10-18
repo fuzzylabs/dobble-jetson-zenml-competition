@@ -1,15 +1,21 @@
 """Run all pipelines."""
+
 import click
 from rich import print
 
+from steps.ingest_data import ingest_data
 from steps.labelbox_to_voc import prepare_labels_step
+
+# from steps.split_data import split_data
+# from steps.validate_data import validate_data
+# from steps.create_data_release import create_data_release
 
 from pipelines.data_pipeline import data_pipeline
 
 
 def run_data_pipeline():
     """Run all steps in data pipeline."""
-    pipeline = data_pipeline(prepare_labels_step())
+    pipeline = data_pipeline(ingest_data(), prepare_labels_step())
     pipeline.run(config_path="config_data_pipeline.yaml")
 
 

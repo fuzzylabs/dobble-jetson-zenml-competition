@@ -1,4 +1,5 @@
 """Utils for converting to VOC format."""
+
 import os
 from dataclasses import dataclass
 from typing import Sequence

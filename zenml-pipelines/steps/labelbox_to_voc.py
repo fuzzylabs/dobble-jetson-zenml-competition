@@ -18,13 +18,13 @@ logger = get_logger(__name__)
 class DatasetParameters(BaseParameters):
     """Dataset parameters."""
 
-    # path to image directory containing images
+    # Path to image directory containing images
     image_base_dir: str
 
-    # path to label directory that will be created
+    # Path to label directory that will be created
     label_base_dir: str
 
-    # path to labelbox export json file
+    # Path to labelbox export json file
     labelbox_export_path: str
 
 
@@ -49,4 +49,5 @@ def prepare_labels_step(params: DatasetParameters) -> Output():
 
     # save labels to directory in VOC format
     save_annotations_to_xml(params.label_base_dir, annotations)
+
     save_labels(params.label_base_dir, labels)
