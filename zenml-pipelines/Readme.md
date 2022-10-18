@@ -18,7 +18,7 @@ export LABELBOX_API_KEY=""
 # Labelbox project ID
 export LABELBOX_PROJECT_ID=""
 ```
-As this is sensetive information it must be filled out with your own API key and project ID.
+As this is sensitive information it must be filled out with your own API key and project ID.
 
 2. `prepare_labels` step : This step requires 3 parameters to convert the labels from labelbox json format to VOC format.
     * image_base_dir : The base directory of the images
