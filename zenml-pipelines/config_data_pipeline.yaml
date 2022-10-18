@@ -1,0 +1,16 @@
+enable_cache: False
+settings:
+  docker:
+    build_context_root: .
+    requirements:
+      - pillow==9.2.0
+steps:
+  prepare_labels:
+    enable_cache: false
+    parameters:
+      # path to image directory containing images
+      image_base_dir: "data/dobble/images/"
+      # path to label directory that will be created
+      label_base_dir: "data/dobble/voc"
+      # path to labelbox export json file
+      labelbox_export_path: "data/dobble/labelbox_export.json"

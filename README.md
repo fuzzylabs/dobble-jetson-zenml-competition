@@ -27,6 +27,38 @@
     pre-commit run --all-files
     ```
 
+    To check individual fails, run
+
+    Interrogate pre-commit
+
+    ```bash
+    interrogate -c pyproject.toml --vv
+    ```
+
+    Flake8 pre-commit
+
+    ```bash
+    flake8 .
+    ```
+
+    Black pre-commit
+
+    ```bash
+    black . --config pyproject.toml --check
+    ```
+
+    pydocstyle pre-commit, list of [error code](https://www.pydocstyle.org/en/stable/error_codes.html)
+
+    ```bash
+    pydocstyle .  -e --count --convention=google --add-ignore=D403
+    ```
+
+    darglint pre-commit
+
+    ```bash
+    darglint -v 2 .
+    ```
+
 ## ZenML Setup Local
 
 Directory Structure
@@ -49,7 +81,7 @@ Directory Structure
 
 ```
 
-1. Create a virtual environment (conda, pip, virtualenv, poetry). Recommened python version 3.8
+1. Use the same virtual environment created in above step(conda, pip, virtualenv, poetry).
 
 2. Install requirements
 
@@ -59,17 +91,17 @@ Directory Structure
 
 3. Running ZenML Locally
 
+    Install ZenML integrations required for project
+
+    ```bash
+    zenml integration install -y pytorch mlflow
+    ```
+
     Initialize ZenML repo
 
     ```bash
     cd zenml-pipelines
     zenml init
-    ```
-
-    Install ZenML integrations required for project
-
-    ```bash
-    zenml integration install -y pytorch mlflow
     ```
 
     Start ZenServer
@@ -91,6 +123,9 @@ Directory Structure
         -e mlflow_tracker \
         --set
     ```
+
+    > **Note**
+    > If there stack already exists by checking `zenml stack list`, activate the stack by running `zenml stack set fuzzy_stack`.
 
     Run ZenML pipelines.
 
