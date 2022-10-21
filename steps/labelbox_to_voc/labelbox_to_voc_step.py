@@ -4,7 +4,7 @@ import json
 from zenml.steps import BaseParameters, Output, step
 from zenml.logger import get_logger
 
-from .src.voc_utils import (
+from ..src.voc_utils import (
     create_data_directories,
     get_annotations,
     get_labels,

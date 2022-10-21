@@ -1,4 +1,4 @@
-# zenml-competition
+# ZenML Competition
 
 # Setup
 
@@ -76,14 +76,15 @@ Directory Structure
 ├── README.md
 ├── requirements.txt                 # dependencies required for zenml project
 ├── setup-requirements.txt           # dependencies required for precommit
-└── zenml-pipelines
-    ├── config_training_pipeline.yaml  # each pipeline will have one config file containing information regarding step and other configuration
-    ├── pipelines                  # all pipelines inside this folder
-    │   └── training_pipeline.py
-    ├── run.py                     # main file where all pipelines can be run
-    └── steps                      # all steps inside this folder
+├── pipelines                  # all pipelines inside this folder
+│   └── training_pipeline
+        └── training_pipeline.py
+        └── config_training_pipeline.yaml  # each pipeline will have one config file containing information regarding step and other configuration
+├── run.py                     # main file where all pipelines can be run
+└── steps                      # all steps inside this folder
+    └── data_preprocess
         └── data_preprocess_step.py
-        └── src                    # extra utilities that are required by steps added in this folder
+    └── src                    # extra utilities that are required by steps added in this folder
 
 ```
 
@@ -106,7 +107,6 @@ Directory Structure
     Initialize ZenML repo
 
     ```bash
-    cd zenml-pipelines
     zenml init
     ```
 

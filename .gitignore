@@ -151,3 +151,15 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# MacOS
+.DS_Store
+
+# ignore zen init folder
+.zen
+
+# dataset folder
+data
+
+# local mlflow runs
+mlruns
