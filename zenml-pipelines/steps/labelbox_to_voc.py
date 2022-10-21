@@ -24,30 +24,33 @@ class DatasetParameters(BaseParameters):
     # Path to label directory that will be created
     label_base_dir: str
 
-    # Path to labelbox export json file
-    labelbox_export_path: str
-
 
 @step
-def prepare_labels_step(params: DatasetParameters) -> Output():
+def prepare_labels_step(params: DatasetParameters, jsonString: str) -> Output():
     """Convert labelbox json format to VOC format.
+
+    It creates directories at `label_base_dir` that contains VOC format labels.
 
     Args:
         params (DatasetParameters): parameters for dataset
+        jsonString (str): string containing exported labels in json format
     """
-    with open(params.labelbox_export_path) as f:
-        labelbox_export = json.load(f)
+    # Convert string from json.dumps to json
+    labelbox_export = json.loads(jsonString)
 
-    # create directories to store converted labels
+    # Create directories to store converted labels
     create_data_directories(params.label_base_dir)
+    logger.info(
+        f"Creating directories at {params.label_base_dir} to store labels in VOC format"
+    )
 
-    # parse labels
+    # Parse labels
     annotations = get_annotations(
         params.image_base_dir, params.label_base_dir, labelbox_export
     )
     labels = get_labels(labelbox_export)
 
-    # save labels to directory in VOC format
+    # Save labels to directory in VOC format
     save_annotations_to_xml(params.label_base_dir, annotations)
 
     save_labels(params.label_base_dir, labels)

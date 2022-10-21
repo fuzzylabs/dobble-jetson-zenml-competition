@@ -1,10 +1,14 @@
 """Utils for converting to VOC format."""
-
 import os
 from dataclasses import dataclass
 from typing import Sequence
 from PIL import Image
 import random
+
+from zenml.logger import get_logger
+
+logger = get_logger(__name__)
+random.seed(42)
 
 
 @dataclass
@@ -197,19 +201,31 @@ def create_train_test_split(
     """Split the dataset into train-val and test dataset in `split_ratio`.
 
     Args:
-        split_ratio (float): Ratio for splitting into trainval and test split
+        split_ratio (float): A float in range [0, 1] specifying the split ratio
         label_base_dir (str): Path to store labels for both trainval and test dataset in VOC format
-        annotations (Sequence[Annotation]): annotations in VOC format
+        annotations (Sequence[Annotation]): Annotations in VOC format
     """
+    logger.info(
+        f"Splitting the dataset into train-val {int(split_ratio*100)} % and test dataset {int((1-split_ratio)*100)} % ratio"
+    )
+
+    # Shuffle annotations
     random.shuffle(annotations)
+    logger.info(f"Number of labels in dataset: {len(annotations)}")
+
+    # Split annotations in trainval and test dataset
     cutoff = int(len(annotations) * split_ratio)
     trainval = annotations[:cutoff]
     test = annotations[cutoff:]
+    logger.info(f"Number of labels in trainval dataset: {len(trainval)}")
+    logger.info(f"Number of labels in test dataset: {len(test)}")
 
+    # Save trainval labels
     with open(f"{label_base_dir}/ImageSets/Main/trainval.txt", "w") as f:
         for a in trainval:
             f.write(a.filename.split(".")[0] + "\n")
 
+    # Save test labels
     with open(f"{label_base_dir}/ImageSets/Main/test.txt", "w") as f:
         for a in test:
             f.write(a.filename.split(".")[0] + "\n")

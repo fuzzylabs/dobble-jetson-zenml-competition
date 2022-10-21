@@ -3,3 +3,6 @@
 
 # dataset folder
 data
+
+# local mlflow runs
+mlruns

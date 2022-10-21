@@ -1,5 +1,5 @@
-zenml==0.20.3
-zenml[server]==0.20.3
+zenml==0.20.4
+zenml[server]==0.20.4
 torchvision
 pillow==9.2.0
 labelbox[data]==3.27.2

@@ -1,4 +1,5 @@
 enable_cache: False
+run_name: "dobble-run-1"
 settings:
   docker:
     build_context_root: .
@@ -11,14 +12,19 @@ steps:
     parameters:
       # Path to image directory containing images
       image_base_dir: "data/dobble/images/"
-      # Path to labelbox export json file
-      labelbox_export_path: "data/dobble/"
   prepare_labels:
     enable_cache: false
     parameters:
-      # path to image directory containing images
+      # Path to image directory containing images
       image_base_dir: "data/dobble/images/"
-      # path to label directory that will be created
+      # Path to label directory that will be created
       label_base_dir: "data/dobble/voc"
-      # path to labelbox export json file
-      labelbox_export_path: "data/dobble/labelbox_export.json"
+  split_data:
+    enable_cache: false
+    parameters:
+      # Path to image directory containing images
+      image_base_dir: "data/dobble/images/"
+      # Path to label directory that will be created
+      label_base_dir: "data/dobble/voc"
+      # Split ratio to split dataset into trainval and test dataset
+      train_test_split_ratio: 0.8

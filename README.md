@@ -4,14 +4,15 @@
 
 ## One-time setup
 
-1. Create a virtual environment (conda, pip, virtualenv, poetry). Recommened python version 3.8
+1. Create a virtual environment (conda, pip, virtualenv, poetry) and activate it. Recommened python version 3.8
 
-2. Install requirements and pre-commit required for setting up the project.
+2. Inside the virtual environment, install requirements and pre-commit required for setting up the project.
 
     ```bash
     pip install -r setup-requirements.txt
     pre-commit install
     ```
+
     Or with Conda
 
     ```bash
@@ -32,12 +33,12 @@
     pre-commit run --all-files
     ```
 
-    To check individual fails, run
+    To check individual fails, run the following commands for particular pre-commit
 
     Interrogate pre-commit
 
     ```bash
-    interrogate -c pyproject.toml --vv
+    interrogate -c pyproject.toml -vv
     ```
 
     Flake8 pre-commit
@@ -52,13 +53,13 @@
     black . --config pyproject.toml --check
     ```
 
-    pydocstyle pre-commit, list of [error code](https://www.pydocstyle.org/en/stable/error_codes.html)
+    pydocstyle pre-commit, list of [error codes](https://www.pydocstyle.org/en/stable/error_codes.html)
 
     ```bash
     pydocstyle .  -e --count --convention=google --add-ignore=D403
     ```
 
-    darglint pre-commit
+    darglint pre-commit, list of [error codes](https://github.com/terrencepreilly/darglint#error-codes)
 
     ```bash
     darglint -v 2 .
@@ -88,7 +89,7 @@ Directory Structure
 
 1. Use the same virtual environment created in above step(conda, pip, virtualenv, poetry).
 
-2. Install requirements
+2. Install requirements inside the already created environment
 
     ```bash
     pip install -r requirements.txt
@@ -96,7 +97,7 @@ Directory Structure
 
 3. Running ZenML Locally
 
-    Install ZenML integrations required for project
+    Install ZenML integrations required for the project
 
     ```bash
     zenml integration install -y pytorch mlflow
@@ -117,6 +118,7 @@ Directory Structure
 
     > **Note**
     > Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
+    > If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again.
 
     By default zenml comes with a stack that runs locally. We will add mlflow as experiment tracker to this local stack. We use this stack to test pipelines locally.
 

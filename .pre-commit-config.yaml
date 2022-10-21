@@ -41,6 +41,7 @@ repos:
         args:
           - --convention=google
           - --add-ignore=D403
+        additional_dependencies: ["toml"]
 
   - repo: https://github.com/terrencepreilly/darglint
     rev: v1.5.8
