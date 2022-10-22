@@ -204,6 +204,10 @@ def create_train_test_split(
         split_ratio (float): A float in range [0, 1] specifying the split ratio
         label_base_dir (str): Path to store labels for both trainval and test dataset in VOC format
         annotations (Sequence[Annotation]): Annotations in VOC format
+
+    Returns:
+        train -- a list of image files in the training dataset.
+        test -- a list of image files in the testing dataset.
     """
     logger.info(
         f"Splitting the dataset into train-val {int(split_ratio*100)} % and test dataset {int((1-split_ratio)*100)} % ratio"
@@ -229,3 +233,5 @@ def create_train_test_split(
     with open(f"{label_base_dir}/ImageSets/Main/test.txt", "w") as f:
         for a in test:
             f.write(a.filename.split(".")[0] + "\n")
+
+    return trainval, test

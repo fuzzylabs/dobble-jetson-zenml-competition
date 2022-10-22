@@ -10,7 +10,7 @@ def data_pipeline(
     ingest_data,
     prepare_labels,
     split_data,
-    # validate_data,
+    validate_data,
     # create_data_release
 ):
     """Data pipeline.
@@ -26,6 +26,7 @@ def data_pipeline(
         ingest_data: This step fetches the current Dobble data from Labelbox and saves it locally.
         prepare_labels:  This step converts labels from labelbox json to VOC format.
         split_data : This step splits dataset into train-val and test in `train_test_split_ratio` ratio.
+        validate_data: This steps performs data integrity checks on the train and test datasets.
     """
     # specify execution order for the steps
     split_data.after(prepare_labels)
@@ -37,11 +38,12 @@ def data_pipeline(
     prepare_labels(labels_json_string)
 
     # Split the data into train-val and test datasets
-    split_data(labels_json_string)
+    train, test = split_data(labels_json_string)
 
     # Run deepchecks on the datasets
-    # checks_passed = validate_data()
+    checks_passed = validate_data(train, test)
 
     # Create a new data release if the tests pass
-    # if checks_passed:
-    #     create_data_release()
+    if checks_passed:
+        #     create_data_release()
+        logger.info("Data validation checks passed!")

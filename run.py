@@ -5,6 +5,7 @@ from rich import print
 from steps.ingest_data.ingest_data_step import ingest_data
 from steps.labelbox_to_voc.labelbox_to_voc_step import prepare_labels_step
 from steps.split_data.split_data_step import split_data
+from steps.validate_data.validate_data_step import data_integrity_check
 
 # from steps.validate_data.validate_data_step import validate_data
 # from steps.create_data_release.create_data_release_step import create_data_release
@@ -16,7 +17,12 @@ from zenml.integrations.mlflow.mlflow_utils import get_tracking_uri
 
 def run_data_pipeline():
     """Run all steps in data pipeline."""
-    pipeline = data_pipeline(ingest_data(), prepare_labels_step(), split_data())
+    pipeline = data_pipeline(
+        ingest_data(),
+        prepare_labels_step(),
+        split_data(),
+        data_integrity_check(),
+    )
     pipeline.run(
         config_path="pipelines/data_pipeline/config_data_pipeline.yaml"
     )
