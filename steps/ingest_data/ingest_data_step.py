@@ -1,13 +1,12 @@
 """Collects data from Labelbox using the Labelbox api."""
-import os
 import json
-
-from PIL import Image
-from labelbox import Client
+import os
 from datetime import datetime
 
-from zenml.steps import Output, step, BaseParameters
+from labelbox import Client
+from PIL import Image
 from zenml.logger import get_logger
+from zenml.steps import BaseParameters, Output, step
 
 logger = get_logger(__name__)
 

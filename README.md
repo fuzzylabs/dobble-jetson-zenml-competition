@@ -47,6 +47,12 @@
     flake8 .
     ```
 
+    isort pre-commit
+
+    ```bash
+    isort . --settings-path=pyproject.toml
+    ```
+
     Black pre-commit
 
     ```bash

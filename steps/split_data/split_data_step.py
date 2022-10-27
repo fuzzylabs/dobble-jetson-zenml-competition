@@ -1,10 +1,10 @@
 """Split dataset."""
 import json
 
-from zenml.steps import BaseParameters, Output, step
 from zenml.logger import get_logger
+from zenml.steps import BaseParameters, Output, step
 
-from ..src.voc_utils import get_annotations, create_train_test_split
+from ..src.voc_utils import create_train_test_split, get_annotations
 
 logger = get_logger(__name__)
 
