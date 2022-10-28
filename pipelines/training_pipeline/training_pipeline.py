@@ -8,8 +8,8 @@ logger = get_logger(__name__)
 @pipeline
 def training_pipeline(
     create_data_loader,
-    # train,
-    # evaluation,
+    trainer,
+    # evaluator,
     # validate_data,
     # validate_model,
     # convert_to_onnx
@@ -18,7 +18,7 @@ def training_pipeline(
 
     Steps
     1. create_data_loader: This step create a dataloaders for train, val and test datasets.
-    2. train: This step trains a Pytorch model using the train dataset.
+    2. trainer: This step trains a pytorch model using the datasets.
     3. evaluation:
     4. validate_data:
     5. validate_model:
@@ -26,15 +26,18 @@ def training_pipeline(
 
     Args:
         create_data_loader: This step create a dataloaders for train, val and test datasets.
+        trainer: This step trains a pytorch model using the datasets
     """
     # Create train, val and test dataloaders
-    train_loader, val_loader, test_loader = create_data_loader()
+    train_loader, val_loader, test_loader, classes = create_data_loader()
 
     # Train the model
-    # train()
+    model = trainer(
+        train_loader=train_loader, val_loader=val_loader, classes=classes
+    )
 
-    # Model evaluation
-    # evaliation()
+    # Evaluate the model
+    # evaluator(model=model, test_loader=test_loader)
 
     #
     # validate_data()
@@ -43,4 +46,4 @@ def training_pipeline(
     # validate_model()
 
     #
-    # convert_to_onnx()
+    # convert_to_onnx(model=model)

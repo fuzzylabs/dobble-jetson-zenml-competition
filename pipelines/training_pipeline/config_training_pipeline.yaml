@@ -4,9 +4,10 @@ settings:
   docker:
     build_context_root: .
     requirements:
-      pascal-voc==0.0.3
       opencv-python==4.6.0
       albumentations==1.3.0
+      pascal-voc==0.0.3
+      torchmetrics==0.10.1
 steps:
   create_data_loader:
     enable_cache: False
@@ -16,8 +17,27 @@ steps:
       # Batch size
       batch_size: 8
       # whether to use augmentations
-      use_aug: True
-      # image size to use for training
-      image_size: 300
+      use_aug: False
+      # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
+      image_size: 320
       # Number of workers for multi-rpocess data loading
-      num_workers: 0
+      num_workers: 4
+  trainer:
+    enable_cache: False
+    parameters:
+      # save models folder
+      models_folder: "models/"
+      # select model from ['fasterrcnn_mobilenet_v3_large_fpn', 'fasterrcnn_resnet50_fpn', 'ssdlite320_mobilenet_v3_large']
+      net: "ssdlite320_mobilenet_v3_large"
+      # learning rate
+      lr: 1e-3
+      # lr momentum
+      momentum: 0.9
+      # lr weight decay
+      weight_decay: 0.0005
+      # T_max value for Cosine Annealing Scheduler
+      t_max: 100
+      # number of epochs
+      epochs: 100
+      # print frequency
+      print_freq: 1
