@@ -27,7 +27,7 @@ def load_model(onnx_bytes: bytes) -> onnx.ModelProto:
     return onnx_model
 
 
-if __name__ == "__main__":
+def fetch_onnx_from_zenml():
     onnx_bytes = fetch_onnx_model()
     onnx_model = load_model(onnx_bytes)
 
