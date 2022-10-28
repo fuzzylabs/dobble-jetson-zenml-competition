@@ -12,6 +12,7 @@ def data_pipeline(
     split_data,
     # validate_data,
     # create_data_release
+    upload_data,
 ):
     """Data pipeline.
 
@@ -26,6 +27,7 @@ def data_pipeline(
         ingest_data: This step fetches the current Dobble data from Labelbox and saves it locally.
         prepare_labels:  This step converts labels from labelbox json to VOC format.
         split_data : This step splits dataset into train-val and test in `train_test_split_ratio` ratio.
+        upload_data: This step uploads everything in the data folder onto a S3 bucket.
     """
     # specify execution order for the steps
     split_data.after(prepare_labels)
@@ -45,3 +47,6 @@ def data_pipeline(
     # Create a new data release if the tests pass
     # if checks_passed:
     #     create_data_release()
+
+    # Upload the data folder to S3 bucket
+    upload_data()

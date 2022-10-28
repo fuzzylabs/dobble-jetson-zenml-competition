@@ -28,3 +28,12 @@ steps:
       label_base_dir: "data/dobble/voc"
       # Split ratio to split dataset into trainval and test dataset
       train_test_split_ratio: 0.8
+  upload_data:
+    enable_cache : false
+    parameters:
+      # Path to the data folder containing all outputs from the data pipeline
+      data_base_dir: "data"
+      # Name of the aws service
+      service_name: "s3"
+      # Name of the S3 bucket
+      bucket: "zenml-data"

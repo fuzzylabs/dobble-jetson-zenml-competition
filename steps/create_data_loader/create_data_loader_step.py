@@ -46,8 +46,8 @@ def create_data_loader(
         test_loader (DataLoader): Pytorch dataloader for the testing dataset
     """
     # mean and std for normalizing inputs
-    means = np.array([127, 127, 127])  # RGB layout
-    stds = 128.0
+    means = 0  # RGB layout
+    stds = 1
 
     # whether to use augmentations
     if params.use_aug:
