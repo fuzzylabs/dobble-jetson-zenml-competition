@@ -4,7 +4,7 @@ settings:
   docker:
     build_context_root: .
     requirements:
-      opencv-python==4.6.0
+      opencv-python==4.6.0.66
       albumentations==1.3.0
       pascal-voc==0.0.3
       torchmetrics==0.10.1
@@ -20,7 +20,7 @@ steps:
       use_aug: False
       # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
       image_size: 320
-      # Number of workers for multi-rpocess data loading
+      # Number of workers for multi-process data loading
       num_workers: 4
   trainer:
     enable_cache: False
@@ -41,3 +41,10 @@ steps:
       epochs: 100
       # print frequency
       print_freq: 1
+  export_onnx:
+    enable_cache: False
+    parameters:
+      # path to save onnx model
+      onnx_model_path: "models/model.onnx"
+      # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
+      image_size: 300
