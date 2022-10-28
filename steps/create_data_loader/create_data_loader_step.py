@@ -1,5 +1,4 @@
 """Create a data loader."""
-import numpy as np
 from torch.utils.data import DataLoader
 from zenml.logger import get_logger
 from zenml.steps import BaseParameters, Output, step
@@ -33,7 +32,10 @@ class DataLoaderParameters(BaseParameters):
 def create_data_loader(
     params: DataLoaderParameters,
 ) -> Output(
-    train_loader=DataLoader, val_loader=DataLoader, test_loader=DataLoader
+    train_loader=DataLoader,
+    val_loader=DataLoader,
+    test_loader=DataLoader,
+    classes=list,
 ):
     """Create PyTorch DataLoader for traiuning, validation and test datasets.
 
@@ -44,10 +46,13 @@ def create_data_loader(
         train_loader (DataLoader): Pytorch dataloader for the training dataset
         val_loader (DataLoader): Pytorch dataloader for the validation dataset
         test_loader (DataLoader): Pytorch dataloader for the testing dataset
+        classes (list) : A list containing unique classes in the dataset
     """
-    # mean and std for normalizing inputs
-    means = np.array([127, 127, 127])  # RGB layout
-    stds = 128.0
+
+    # mean and std for normalizing inputs in range [0-1]
+    means = 0.0
+    stds = 1.0
+
 
     # whether to use augmentations
     if params.use_aug:
@@ -82,7 +87,8 @@ def create_data_loader(
         is_val=False,
     )
 
-    num_classes = len(train_dataset.class_names)
+    classes = list(train_dataset.class_names)
+    num_classes = len(classes)
     logger.info(f"Number of classes : {num_classes}")
     logger.info(f"Number of samples in train dataset: {len(train_dataset)}")
     logger.info(f"Number of samples in validation dataset: {len(val_dataset)}")
@@ -94,23 +100,26 @@ def create_data_loader(
         batch_size=params.batch_size,
         num_workers=params.num_workers,
         shuffle=True,
+        collate_fn=train_dataset.collate_fn,
     )
     val_loader = DataLoader(
         dataset=val_dataset,
         batch_size=params.batch_size,
         num_workers=params.num_workers,
         shuffle=False,
+        collate_fn=val_dataset.collate_fn,
     )
     test_loader = DataLoader(
         dataset=test_dataset,
         batch_size=params.batch_size,
         num_workers=params.num_workers,
         shuffle=False,
+        collate_fn=test_dataset.collate_fn,
     )
 
-    train_input, train_bbox, train_labels = next(iter(train_loader))
-    logger.info(f"Input batch shape: {train_input.size()}")
-    logger.info(f"Bbox batch shape: {train_bbox.size()}")
-    logger.info(f"Labels batch shape: {train_labels.size()}")
+    train_input, train_target = next(iter(train_loader))
+    print(f"Input batch shape: {train_input[0].size()}")
+    print(f"Bbox batch shape: {train_target[0]['boxes'].size()}")
+    print(f"Labels batch shape: {train_target[0]['labels'].size()}")
 
-    return train_loader, val_loader, test_loader
+    return train_loader, val_loader, test_loader, classes

@@ -68,7 +68,7 @@ class DobbleDataset(Dataset):
             index (int) : Index int ranging from 0 to len(self.ids)
 
         Returns:
-            tuple: A tuple containing image, bounding boxes and labels
+            tuple: A tuple containing image and target dict containing bounding boxes and labels
 
         Raises:
             IOError: If unable to read image using `cv2.imread`
@@ -97,8 +97,8 @@ class DobbleDataset(Dataset):
             boxes = boxes_torch
         if self.target_transform:
             boxes, labels = self.target_transform(boxes, labels)
-
-        return image, boxes, labels
+        target = {"labels": labels, "boxes": boxes}
+        return image, target
 
     def __len__(self):
         """Number of samples in the dataset.
@@ -235,3 +235,14 @@ class DobbleDataset(Dataset):
         if os.path.exists(image_file):
             return True
         return False
+
+    def collate_fn(self, batch):
+        """Collation function to convert array and dict returned by dataset to tuple.
+
+        Args:
+            batch (_type_): Pytorch dataloader batch
+
+        Returns:
+            tuple: A tuple of image and targets (containing dict of bounding boxes and labels)
+        """
+        return tuple(zip(*batch))

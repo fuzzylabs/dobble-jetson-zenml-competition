@@ -11,7 +11,7 @@ from zenml.steps import BaseParameters, Output, step
 logger = get_logger(__name__)
 
 
-class IngestDataStepParams(BaseParameters):
+class IngestDataParams(BaseParameters):
     """Loading Dataset parameters."""
 
     # Path to image directory containing images
@@ -19,11 +19,11 @@ class IngestDataStepParams(BaseParameters):
 
 
 @step
-def ingest_data(params: IngestDataStepParams) -> Output(jsonString=str):
+def ingest_data(params: IngestDataParams) -> Output(jsonString=str):
     """Fetch the data from Labelbox and save it locally.
 
     Args:
-        params (IngestDataStepParams): parameters for downloading data
+        params (IngestDataParams): parameters for downloading data
 
     Returns:
         jsonString (str): string containing exported labels in json format

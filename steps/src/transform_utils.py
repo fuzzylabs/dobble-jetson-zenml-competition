@@ -4,13 +4,13 @@ import numpy as np
 from albumentations.pytorch import ToTensorV2
 
 
-def get_basic_transform(image_size: int, means: np.ndarray, stds: float):
+def get_basic_transform(image_size: int, means: float, stds: float):
     """A common transformation function containing basic transformation such as resize and normalize.
 
     Args:
         image_size (int): Size of square image (both height and width are same)
-        means (np.ndarray): Numpy array containing 3 values of mean in RGB layout
-        stds (float): A float contaitning Standard deviation
+        means (float): A float containing  mean to convert image in range [0-1]
+        stds (float): A float contaitning standard deviation to convert image in range [0-1]
 
     Returns:
         albumentations.core.composition.Compose: Albumentations transformed function that takes input and returns transformed version as output
@@ -29,13 +29,13 @@ def get_basic_transform(image_size: int, means: np.ndarray, stds: float):
     return transform
 
 
-def get_train_transform(image_size: int, means: np.ndarray, stds: float):
+def get_train_transform(image_size: int, means: float, stds: float):
     """A transformation function used for training containing augmentations such as flips, distort, rotate, etc.
 
     Args:
         image_size (int): Size of square image (both height and width are same)
-        means (np.ndarray): Numpy array containing 3 values of mean in RGB layout
-        stds (float): A float contaitning Standard deviation
+        means (float): A float containing  mean to convert image in range [0-1]
+        stds (float): A float contaitning standard deviation to convert image in range [0-1]
 
     Returns:
         albumentations.core.composition.Compose: Albumentations transformed function that takes input and returns transformed version as output

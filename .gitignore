@@ -163,3 +163,6 @@ data
 
 # local mlflow runs
 mlruns
+
+# models folder
+models
