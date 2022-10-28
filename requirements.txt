@@ -6,5 +6,4 @@ pascal-voc==0.0.3
 pillow==9.2.0
 torchmetrics==0.10.1
 torchvision
-zenml==0.20.4
-zenml[server]==0.20.4
+zenml[server]==0.20.5

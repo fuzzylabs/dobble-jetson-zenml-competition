@@ -47,4 +47,4 @@ steps:
       # path to save onnx model
       onnx_model_path: "models/model.onnx"
       # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
-      image_size: 300
+      image_size: 320

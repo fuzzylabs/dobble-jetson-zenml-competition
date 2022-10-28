@@ -47,4 +47,4 @@ def training_pipeline(
     # validate_model()
 
     # export trained pytorch model to onnx
-    export_onnx(model=model)
+    onnx_bytes = export_onnx(model=model)
