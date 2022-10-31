@@ -48,11 +48,9 @@ def create_data_loader(
         test_loader (DataLoader): Pytorch dataloader for the testing dataset
         classes (list) : A list containing unique classes in the dataset
     """
-
     # mean and std for normalizing inputs in range [0-1]
     means = 0.0
     stds = 1.0
-
 
     # whether to use augmentations
     if params.use_aug:

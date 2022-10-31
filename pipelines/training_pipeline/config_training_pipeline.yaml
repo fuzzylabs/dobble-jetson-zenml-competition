@@ -8,7 +8,14 @@ settings:
       albumentations==1.3.0
       pascal-voc==0.0.3
       torchmetrics==0.10.1
+      boto3==1.25.3
 steps:
+  download_data:
+    enable_cache: False
+    parameters:
+      dataset_base_dir: "data/dobble/voc/"
+      service_name: "s3"
+      bucket_name: "zenml-data"
   create_data_loader:
     enable_cache: False
     parameters:
