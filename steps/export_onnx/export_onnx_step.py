@@ -43,12 +43,13 @@ def export_onnx(
     # create example image data
     dummy_input = torch.randn(1, 3, params.image_size, params.image_size).to(device)  # fmt: skip
     logger.info("Exporting model to ONNX...")
+    # get onnx model as bytes
     with io.BytesIO() as f:
         torch.onnx.export(
             model,
             dummy_input,
             f,
-            verbose=True,
+            verbose=False,
             input_names=input_names,
             output_names=output_names,
         )
@@ -56,6 +57,7 @@ def export_onnx(
 
         onnx_bytes = f.getvalue()
 
+    # get onnx_model from bytes
     onnx_model = onnx.load_from_string(onnx_bytes)
     # log onnx model to mlflow as artifact
     mlflow.onnx.log_model(onnx_model)
