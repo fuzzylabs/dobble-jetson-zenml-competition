@@ -1,6 +1,6 @@
 """Data pipeline."""
-from zenml.pipelines import pipeline
 from zenml.logger import get_logger
+from zenml.pipelines import pipeline
 
 logger = get_logger(__name__)
 
@@ -12,6 +12,7 @@ def data_pipeline(
     split_data,
     validate_data,
     # create_data_release
+    upload_data,
 ):
     """Data pipeline.
 
@@ -27,9 +28,11 @@ def data_pipeline(
         prepare_labels:  This step converts labels from labelbox json to VOC format.
         split_data : This step splits dataset into train-val and test in `train_test_split_ratio` ratio.
         validate_data: This steps performs data integrity checks on the train and test datasets.
+        upload_data: This step uploads everything in the data folder onto a S3 bucket.
     """
     # specify execution order for the steps
     split_data.after(prepare_labels)
+    upload_data.after(split_data)
 
     # Collect data from Labelbox
     labels_json_string = ingest_data()
@@ -47,3 +50,6 @@ def data_pipeline(
     if checks_passed:
         #     create_data_release()
         logger.info("Data validation checks passed!")
+
+    # Upload the data folder to S3 bucket
+    upload_data()

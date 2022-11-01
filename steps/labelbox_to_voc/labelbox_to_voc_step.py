@@ -1,8 +1,8 @@
 """Convert labels from labelbox format to VOC format."""
 import json
 
-from zenml.steps import BaseParameters, Output, step
 from zenml.logger import get_logger
+from zenml.steps import BaseParameters, Output, step
 
 from ..src.voc_utils import (
     create_data_directories,

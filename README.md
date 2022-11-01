@@ -47,6 +47,12 @@
     flake8 .
     ```
 
+    isort pre-commit
+
+    ```bash
+    isort . --settings-path=pyproject.toml
+    ```
+
     Black pre-commit
 
     ```bash
@@ -118,7 +124,7 @@ Directory Structure
 
     > **Note**
     > Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
-    > If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again.
+    > If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again, for MacOS, run `kill $(lsof -t -i:8237)`.
 
     By default zenml comes with a stack that runs locally. We will add mlflow as experiment tracker to this local stack. We use this stack to test pipelines locally.
 
@@ -139,5 +145,5 @@ Directory Structure
     Run ZenML pipelines.
 
     ```bash
-    python3 run.py -dp
+    python3 run.py -dp -tp
     ```

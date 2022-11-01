@@ -2,10 +2,11 @@
 import json
 from typing import List
 
-from zenml.steps import BaseParameters, Output, step
+import mlflow
 from zenml.logger import get_logger
+from zenml.steps import BaseParameters, Output, step
 
-from ..src.voc_utils import get_annotations, create_train_test_split
+from ..src.voc_utils import create_train_test_split, get_annotations
 
 logger = get_logger(__name__)
 
@@ -52,4 +53,7 @@ def split_data(
         params.train_test_split_ratio, params.label_base_dir, annotations
     )
 
+    # Log split ratio to mlflow
+    mlflow.log_param("train_test_split_ratio", params.train_test_split_ratio)
+    
     return train, test

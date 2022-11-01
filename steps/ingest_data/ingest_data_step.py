@@ -1,18 +1,17 @@
 """Collects data from Labelbox using the Labelbox api."""
-import os
 import json
-
-from PIL import Image
-from labelbox import Client
+import os
 from datetime import datetime
 
-from zenml.steps import Output, step, BaseParameters
+from labelbox import Client
+from PIL import Image
 from zenml.logger import get_logger
+from zenml.steps import BaseParameters, Output, step
 
 logger = get_logger(__name__)
 
 
-class IngestDataStepParams(BaseParameters):
+class IngestDataParams(BaseParameters):
     """Loading Dataset parameters."""
 
     # Path to image directory containing images
@@ -20,11 +19,11 @@ class IngestDataStepParams(BaseParameters):
 
 
 @step
-def ingest_data(params: IngestDataStepParams) -> Output(jsonString=str):
+def ingest_data(params: IngestDataParams) -> Output(jsonString=str):
     """Fetch the data from Labelbox and save it locally.
 
     Args:
-        params (IngestDataStepParams): parameters for downloading data
+        params (IngestDataParams): parameters for downloading data
 
     Returns:
         jsonString (str): string containing exported labels in json format
