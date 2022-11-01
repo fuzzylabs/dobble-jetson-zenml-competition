@@ -228,6 +228,6 @@ def trainer(
     model.load_state_dict(best_weights)
 
     # Log Pytorch model to mlflow as artifact
-    mlflow.pytorch.log_model(model)
+    mlflow.pytorch.log_model(model, "pytorch_model")
 
     return model

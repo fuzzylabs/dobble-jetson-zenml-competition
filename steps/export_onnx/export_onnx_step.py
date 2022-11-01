@@ -60,6 +60,6 @@ def export_onnx(
     # get onnx_model from bytes
     onnx_model = onnx.load_from_string(onnx_bytes)
     # log onnx model to mlflow as artifact
-    mlflow.onnx.log_model(onnx_model)
+    mlflow.onnx.log_model(onnx_model, "onnx_model")
 
     return onnx_bytes

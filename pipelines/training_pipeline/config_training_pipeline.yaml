@@ -10,6 +10,7 @@ settings:
       - torchmetrics==0.10.1
       - boto3==1.25.3
       - onnx==1.12.0
+      - onnxruntime==1.13.1
   # set mlflow experiment to be used by all steps settings here
   experiment_tracker.mlflow:
     experiment_name: "dobble-exp-1"
