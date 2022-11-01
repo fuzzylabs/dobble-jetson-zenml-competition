@@ -7,7 +7,7 @@ sudo docker build -t fuzzylabs/dobble-jetson-nano .
 
 ## Run
 ```
-sudo docker run --rm -it --runtime nvidia $additional_flags fuzzylabs/dobble-jetson-nano $source [$output]
+sudo docker run --rm -it --runtime nvidia -v model:/dobble/model $additional_flags fuzzylabs/dobble-jetson-nano $source [$output]
 ```
 
 The default entrypoint is the inference script, that requires a source (an image file, a video file or a camera device). The output is optional
