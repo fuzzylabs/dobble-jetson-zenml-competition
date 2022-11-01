@@ -65,6 +65,8 @@ def log_params_mlflow(params: TrainerParameters):
     Args:
         params (TrainerParameters): Paramters for trainer
     """
+    # log device
+    mlflow.log_param("device", device)
     # Log net to use
     mlflow.log_param("Net", params.net)
     # Log model learning rate
@@ -225,7 +227,7 @@ def trainer(
     # reinitialize model with best weights
     model.load_state_dict(best_weights)
 
-    # Log Pytorch model
+    # Log Pytorch model to mlflow as artifact
     mlflow.pytorch.log_model(model)
 
     return model

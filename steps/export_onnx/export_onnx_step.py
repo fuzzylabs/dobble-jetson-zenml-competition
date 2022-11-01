@@ -57,7 +57,7 @@ def export_onnx(
         onnx_bytes = f.getvalue()
 
     onnx_model = onnx.load_from_string(onnx_bytes)
-
+    # log onnx model to mlflow as artifact
     mlflow.onnx.log_model(onnx_model)
 
     return onnx_bytes
