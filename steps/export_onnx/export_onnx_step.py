@@ -30,7 +30,7 @@ def export_onnx(params: ExportParameters, model: nn.Module) -> Output():
     input_names = ["input_0"]
     output_names = ["scores", "boxes"]
     model.to(device)
-    # create example image data
+    model.eval()
     dummy_input = torch.randn(1, 3, params.image_size, params.image_size).to(device)  # fmt: skip
     logger.info("Exporting model to ONNX...")
     torch.onnx.export(

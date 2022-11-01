@@ -24,7 +24,7 @@ steps:
       # Batch size
       batch_size: 8
       # whether to use augmentations
-      use_aug: False
+      use_aug: True
       # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
       image_size: 320
       # Number of workers for multi-process data loading
@@ -36,6 +36,8 @@ steps:
       models_folder: "models/"
       # select model from ['fasterrcnn_mobilenet_v3_large_fpn', 'fasterrcnn_resnet50_fpn', 'ssdlite320_mobilenet_v3_large']
       net: "ssdlite320_mobilenet_v3_large"
+     # if True pretrained backbone + pretrained  detection else pretrained backbone only
+      use_pretrained: False
       # learning rate
       lr: 1e-3
       # lr momentum
@@ -48,10 +50,16 @@ steps:
       epochs: 100
       # print frequency
       print_freq: 1
+      # score threshold to filter bounding boxes
+      score_threshold: 0.6
+      # save a grid of 3 images (image, ground_truth, predictions) bounding boxes and labels
+      save_prediction: True
+      # directory to save images
+      prediction_folder: "predictions/"
   export_onnx:
     enable_cache: False
     parameters:
       # path to save onnx model
       onnx_model_path: "models/model.onnx"
       # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
-      image_size: 300
+      image_size: 320

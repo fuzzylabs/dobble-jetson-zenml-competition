@@ -166,3 +166,6 @@ mlruns
 
 # models folder
 models
+
+# predictions folder
+predictions
