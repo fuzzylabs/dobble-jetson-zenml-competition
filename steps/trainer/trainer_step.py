@@ -3,7 +3,6 @@ import os
 from functools import partial
 
 import mlflow
-
 import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -21,7 +20,7 @@ from zenml.steps import BaseParameters, Output, step
 
 from steps.src.train_utils import (
     create_dir,
-    display_table,
+    display_and_log_metric,
     save_best_model,
     test_one_epoch,
     train_one_epoch,
@@ -58,6 +57,26 @@ class TrainerParameters(BaseParameters):
     save_prediction: bool
     # directory to save images
     prediction_folder: str
+
+
+def log_params_mlflow(params: TrainerParameters):
+    """Log trainer parameters to mlflow.
+
+    Args:
+        params (TrainerParameters): Paramters for trainer
+    """
+    # Log model learning rate
+    mlflow.log_param("Learning rate", params.lr)
+    # Log momentun
+    mlflow.log_param("Momentum", params.momentum)
+    # Log weight decay
+    mlflow.log_param("Weight decay", params.weight_decay)
+    # Log t_max value for Cosine Annealing Scheduler
+    mlflow.log_param("T-max", params.t_max)
+    # Log number of epochs
+    mlflow.log_param("Epochs", params.epochs)
+    # Log core threshold to filter bounding boxes
+    mlflow.log_param("Score threshold", params.score_threshold)
 
 
 def get_model(params: TrainerParameters, num_classes: int) -> nn.Module:
@@ -138,21 +157,7 @@ def trainer(
     logger.info(f"Using {params.net} model for training")
     model = get_model(params, num_classes)
 
-    # Log model learning rate
-    mlflow.log_param("Learning rate", params.lr)
-    # Log momentun
-    mlflow.log_param("Momentun", params.momentum)
-    # Log weight decay
-    mlflow.log_param("Weight decay", params.weight_decay)
-    # Log t_max value for Cosine Annealing Scheduler
-    mlflow.log_param("T-max", params.t_max)
-    # Log number of epochs
-    mlflow.log_param("No epochs", params.epochs)
-    # Log core threshold to filter bounding boxes
-    mlflow.log_param("Score threshold", params.score_threshold)
-
-    # Log using MLflow pytorch API
-    mlflow.pytorch.autolog()
+    log_params_mlflow(params)
 
     # Specity the optimizer
     parameters = [p for p in model.parameters() if p.requires_grad]
@@ -199,7 +204,7 @@ def trainer(
             save_predictions=params.save_prediction,
         )
         # show metrics output as table
-        display_table(metric_dict)
+        display_and_log_metric(metric_dict, epoch)
         curr_epoch_map = metric_dict["map"]
         # save model only if mAP metric has improved
         if curr_epoch_map > best_map:

@@ -4,6 +4,7 @@ import math
 import os
 from typing import List
 
+import mlflow
 import numpy as np
 import torch
 from PIL import Image
@@ -47,11 +48,12 @@ def get_image(x: torch.Tensor, mean: float, std: float) -> torch.Tensor:
     return torch.from_numpy(np_arr)
 
 
-def display_table(metrics: dict):
-    """Display rich Table output by converting dict to table.
+def display_and_log_metric(metrics: dict, epoch: int):
+    """Display rich Table output by converting dict to table. It also logs metrics to mlflow.
 
     Args:
         metrics (dict): Dict containing metrics score for mAP and mAR.
+        epoch (int) : Current epoch
     """
     table = Table()
     row = []
@@ -60,6 +62,9 @@ def display_table(metrics: dict):
     row += [str(np.round(v.item(), 4)) for v in list(metrics.values())]
     table.add_row(*row)
     print(table)
+    # log metrics to mlflow
+    for k, v in metrics.items():
+        mlflow.log_metric(f"val_{k}", v.item(), epoch)
 
 
 def plot_bounding_box(
@@ -283,6 +288,8 @@ def train_one_epoch(
         # backward pass
         losses.backward()
         optimizer.step()
+        # log training loss to mlflow
+        mlflow.log_metric("total_train_loss", total_loss / num, epoch)
     return total_loss / num
 
 
