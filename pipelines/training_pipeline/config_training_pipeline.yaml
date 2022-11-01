@@ -23,6 +23,7 @@ steps:
       bucket_name: "zenml-data"
   create_data_loader:
     enable_cache: False
+    experiment_tracker: mlflow_tracker
     parameters:
       # Path to image directory containing annotations, labels and images
       dataset_base_dir: "data/dobble/voc/"
@@ -36,6 +37,7 @@ steps:
       num_workers: 4
   trainer:
     enable_cache: False
+    experiment_tracker: mlflow_tracker
     parameters:
       # save models folder
       models_folder: "models/"
@@ -63,6 +65,7 @@ steps:
       prediction_folder: "predictions/"
   export_onnx:
     enable_cache: False
+    experiment_tracker: mlflow_tracker
     parameters:
       # path to save onnx model
       onnx_model_path: "models/model.onnx"

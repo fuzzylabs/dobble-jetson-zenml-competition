@@ -30,7 +30,9 @@ def data_pipeline(
         upload_data: This step uploads everything in the data folder onto a S3 bucket.
     """
     # specify execution order for the steps
+    prepare_labels.after(ingest_data)
     split_data.after(prepare_labels)
+    upload_data.after(split_data)
 
     # Collect data from Labelbox
     labels_json_string = ingest_data()

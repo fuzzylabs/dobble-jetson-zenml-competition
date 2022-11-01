@@ -2,6 +2,8 @@
 import os
 from functools import partial
 
+import mlflow
+
 import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -135,6 +137,22 @@ def trainer(
     num_classes = len(classes)
     logger.info(f"Using {params.net} model for training")
     model = get_model(params, num_classes)
+
+    # Log model learning rate
+    mlflow.log_param("Learning rate", params.lr)
+    # Log momentun
+    mlflow.log_param("Momentun", params.momentum)
+    # Log weight decay
+    mlflow.log_param("Weight decay", params.weight_decay)
+    # Log t_max value for Cosine Annealing Scheduler
+    mlflow.log_param("T-max", params.t_max)
+    # Log number of epochs
+    mlflow.log_param("No epochs", params.epochs)
+    # Log core threshold to filter bounding boxes
+    mlflow.log_param("Score threshold", params.score_threshold)
+
+    # Log using MLflow pytorch API
+    mlflow.pytorch.autolog()
 
     # Specity the optimizer
     parameters = [p for p in model.parameters() if p.requires_grad]

@@ -1,4 +1,6 @@
 """Create a data loader."""
+import mlflow
+
 from torch.utils.data import DataLoader
 from zenml.logger import get_logger
 from zenml.steps import BaseParameters, Output, step
@@ -119,5 +121,14 @@ def create_data_loader(
     print(f"Input batch shape: {train_input[0].size()}")
     print(f"Bbox batch shape: {train_target[0]['boxes'].size()}")
     print(f"Labels batch shape: {train_target[0]['labels'].size()}")
+
+    # Log data loader batch size
+    mlflow.log_param("Batch size", params.batch_size)
+    # Log whether to use augmentations
+    mlflow.log_param("Use augmentations", params.use_aug)
+    # Log image size to use for training
+    mlflow.log_param("Image size", params.image_size)
+    # Log number of workers for multi-process data loading
+    mlflow.log_param("No workers", params.num_workers)
 
     return train_loader, val_loader, test_loader, classes

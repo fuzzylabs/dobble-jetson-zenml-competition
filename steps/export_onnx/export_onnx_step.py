@@ -1,4 +1,6 @@
 """Export PyTorch Model to ONNX."""
+import mlflow
+
 import torch
 from torch import nn
 from zenml.logger import get_logger
@@ -41,4 +43,8 @@ def export_onnx(params: ExportParameters, model: nn.Module) -> Output():
         input_names=input_names,
         output_names=output_names,
     )
+    
+    # Log image size to use for training 
+    mlflow.log_param("Image size", params.image_size)
+
     logger.info(f"Model exported to:  {params.onnx_model_path}")

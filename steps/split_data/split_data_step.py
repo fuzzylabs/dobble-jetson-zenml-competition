@@ -46,5 +46,5 @@ def split_data(params: DatasetSplitParameters, jsonString: str) -> Output():
         params.train_test_split_ratio, params.label_base_dir, annotations
     )
 
-    # log split ratio to mlflow
+    # Log split ratio to mlflow
     mlflow.log_param("train_test_split_ratio", params.train_test_split_ratio)
