@@ -55,7 +55,7 @@ steps:
       # T_max value for Cosine Annealing Scheduler
       t_max: 100
       # number of epochs
-      epochs: 1
+      epochs: 100
       # print frequency
       print_freq: 1
       # score threshold to filter bounding boxes
