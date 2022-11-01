@@ -4,31 +4,49 @@ settings:
   docker:
     build_context_root: .
     requirements:
-      opencv-python==4.6.0.66
-      albumentations==1.3.0
-      pascal-voc==0.0.3
-      torchmetrics==0.10.1
+      - opencv-python==4.6.0.66
+      - albumentations==1.3.0
+      - pascal-voc==0.0.3
+      - torchmetrics==0.10.1
+      - boto3==1.25.3
+      - onnx==1.12.0
+      - onnxruntime==1.13.1
+  # set mlflow experiment to be used by all steps settings here
+  experiment_tracker.mlflow:
+    experiment_name: "dobble-exp-1"
+    nested: False
+    # tags: Mapping[str, Any]
 steps:
+  download_data:
+    enable_cache: False
+    parameters:
+      dataset_base_dir: "data/dobble/voc/"
+      service_name: "s3"
+      bucket_name: "zenml-data"
   create_data_loader:
     enable_cache: False
+    experiment_tracker: mlflow_tracker
     parameters:
       # Path to image directory containing annotations, labels and images
       dataset_base_dir: "data/dobble/voc/"
       # Batch size
       batch_size: 8
       # whether to use augmentations
-      use_aug: False
+      use_aug: True
       # image size to use for training [300 for fasterrcnn, 320 for ssdlite320]
       image_size: 320
       # Number of workers for multi-process data loading
       num_workers: 4
   trainer:
     enable_cache: False
+    experiment_tracker: mlflow_tracker
     parameters:
       # save models folder
       models_folder: "models/"
       # select model from ['fasterrcnn_mobilenet_v3_large_fpn', 'fasterrcnn_resnet50_fpn', 'ssdlite320_mobilenet_v3_large']
       net: "ssdlite320_mobilenet_v3_large"
+      # if True pretrained backbone + pretrained  detection else pretrained backbone only
+      use_pretrained: False
       # learning rate
       lr: 1e-3
       # lr momentum
@@ -41,8 +59,15 @@ steps:
       epochs: 100
       # print frequency
       print_freq: 1
+      # score threshold to filter bounding boxes
+      score_threshold: 0.6
+      # save a grid of 3 images (image, ground_truth, predictions) bounding boxes and labels
+      save_prediction: True
+      # directory to save images
+      prediction_folder: "predictions/"
   export_onnx:
     enable_cache: False
+    experiment_tracker: mlflow_tracker
     parameters:
       # path to save onnx model
       onnx_model_path: "models/model.onnx"

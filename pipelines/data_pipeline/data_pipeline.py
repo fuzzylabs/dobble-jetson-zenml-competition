@@ -31,6 +31,7 @@ def data_pipeline(
     """
     # specify execution order for the steps
     split_data.after(prepare_labels)
+    upload_data.after(split_data)
 
     # Collect data from Labelbox
     labels_json_string = ingest_data()
