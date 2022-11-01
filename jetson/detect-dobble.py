@@ -3,7 +3,6 @@ import jetson.utils
 import argparse
 from card_detection import detect_cards
 from card import *
-from fetch_model import fetch_onnx_from_zenml
 import cv2
 
 NET_DIR="model/"
