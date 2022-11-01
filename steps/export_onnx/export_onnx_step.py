@@ -1,6 +1,8 @@
 """Export PyTorch Model to ONNX."""
-import mlflow
+import io
 
+import mlflow
+import onnx
 import torch
 from torch import nn
 from zenml.logger import get_logger
@@ -21,30 +23,41 @@ class ExportParameters(BaseParameters):
 
 
 @step
-def export_onnx(params: ExportParameters, model: nn.Module) -> Output():
+def export_onnx(
+    params: ExportParameters, model: nn.Module
+) -> Output(onnx_bytes=bytes):
     """Export pytorch model to onnx step.
 
     Args:
         params (ExportParameters): parameters for exporting to onnx
         model (nn.Module) : PyTorch trained model
+
+    Returns:
+        bytes: Bytes of onnx model
     """
     # export to ONNX
     input_names = ["input_0"]
     output_names = ["scores", "boxes"]
     model.to(device)
     model.eval()
+    # create example image data
     dummy_input = torch.randn(1, 3, params.image_size, params.image_size).to(device)  # fmt: skip
     logger.info("Exporting model to ONNX...")
-    torch.onnx.export(
-        model,
-        dummy_input,
-        params.onnx_model_path,
-        verbose=True,
-        input_names=input_names,
-        output_names=output_names,
-    )
-    
-    # Log image size to use for training 
-    mlflow.log_param("Image size", params.image_size)
+    with io.BytesIO() as f:
+        torch.onnx.export(
+            model,
+            dummy_input,
+            f,
+            verbose=True,
+            input_names=input_names,
+            output_names=output_names,
+        )
+        logger.info(f"Model exported to:  {params.onnx_model_path}")
 
-    logger.info(f"Model exported to:  {params.onnx_model_path}")
+        onnx_bytes = f.getvalue()
+
+    onnx_model = onnx.load_from_string(onnx_bytes)
+
+    mlflow.onnx.log_model(onnx_model)
+
+    return onnx_bytes

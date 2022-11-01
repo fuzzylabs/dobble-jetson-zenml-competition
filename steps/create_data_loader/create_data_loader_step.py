@@ -29,6 +29,50 @@ class DataLoaderParameters(BaseParameters):
     num_workers: int
 
 
+def log_params_mlflow(
+    params: DataLoaderParameters,
+    classes: list,
+    train_dataset_len: int,
+    val_dataset_len: int,
+    test_dataset_len: int,
+    means: float,
+    stds: float,
+):
+    """Log data loader parameters to mlflow.
+
+    Args:
+        params (DataLoaderParameters): Paramters for data loader
+        classes (list): List of classes
+        train_dataset_len (int): Length of training dataset
+        val_dataset_len (int): Length of valdiation dataset
+        test_dataset_len (int): Length of testing dataset
+        means (float): Means for normalizing inputs in range [0-1]
+        stds (float): Stds for normalizing inputs in range [0-1]
+    """
+    # Log data loader batch size
+    mlflow.log_param("Batch size", params.batch_size)
+    # Log whether to use augmentations
+    mlflow.log_param("Use augmentations", params.use_aug)
+    # Log image size to use for training
+    mlflow.log_param("Image size", params.image_size)
+    # Log number of workers for multi-process data loading
+    mlflow.log_param("Num workers", params.num_workers)
+    # Log classes
+    mlflow.log_param("Classes", classes)
+    # Log number of classes
+    mlflow.log_param("Num classes", len(classes))
+    # Log number of train samples
+    mlflow.log_param("Train samples", train_dataset_len)
+    # Log number of val samples
+    mlflow.log_param("Val samples", val_dataset_len)
+    # Log number of test samples
+    mlflow.log_param("Test samples", test_dataset_len)
+    # Log means
+    mlflow.log_param("Mean", means)
+    # Log stds
+    mlflow.log_param("std", stds)
+
+
 @step
 def create_data_loader(
     params: DataLoaderParameters,
@@ -121,13 +165,14 @@ def create_data_loader(
     print(f"Bbox batch shape: {train_target[0]['boxes'].size()}")
     print(f"Labels batch shape: {train_target[0]['labels'].size()}")
 
-    # Log data loader batch size
-    mlflow.log_param("Batch size", params.batch_size)
-    # Log whether to use augmentations
-    mlflow.log_param("Use augmentations", params.use_aug)
-    # Log image size to use for training
-    mlflow.log_param("Image size", params.image_size)
-    # Log number of workers for multi-process data loading
-    mlflow.log_param("Num workers", params.num_workers)
+    log_params_mlflow(
+        params,
+        classes,
+        len(train_dataset),
+        len(val_dataset),
+        len(test_dataset),
+        means,
+        stds,
+    )
 
     return train_loader, val_loader, test_loader, classes
