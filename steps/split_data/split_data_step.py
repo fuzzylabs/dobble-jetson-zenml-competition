@@ -1,6 +1,7 @@
 """Split dataset."""
 import json
 
+import mlflow
 from zenml.logger import get_logger
 from zenml.steps import BaseParameters, Output, step
 
@@ -44,3 +45,6 @@ def split_data(params: DatasetSplitParameters, jsonString: str) -> Output():
     create_train_test_split(
         params.train_test_split_ratio, params.label_base_dir, annotations
     )
+
+    # log split ratio to mlflow
+    mlflow.log_param("train_test_split_ratio", params.train_test_split_ratio)

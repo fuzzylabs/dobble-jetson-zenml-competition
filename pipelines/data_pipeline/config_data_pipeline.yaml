@@ -6,6 +6,12 @@ settings:
     requirements:
       - pillow==9.2.0
       - labelbox[data]==3.27.2
+      - boto3==1.25.3
+  # set mlflow experiment to be used by all steps settings here
+  experiment_tracker.mlflow:
+    experiment_name: "dobble-exp-1"
+    nested: False
+    # tags: Mapping[str, Any]
 steps:
   ingest_data:
     enable_cache: false
@@ -21,6 +27,8 @@ steps:
       label_base_dir: "data/dobble/voc"
   split_data:
     enable_cache: false
+    # Use same name as used while registering the stack
+    experiment_tracker: mlflow_tracker
     parameters:
       # Path to image directory containing images
       image_base_dir: "data/dobble/images/"
@@ -29,7 +37,7 @@ steps:
       # Split ratio to split dataset into trainval and test dataset
       train_test_split_ratio: 0.8
   upload_data:
-    enable_cache : false
+    enable_cache: false
     parameters:
       # Path to the data folder containing all outputs from the data pipeline
       data_base_dir: "data"
