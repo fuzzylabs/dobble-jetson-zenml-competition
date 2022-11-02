@@ -29,8 +29,8 @@ def training_pipeline(
     Args:
         download_data: This step downloads the data from the S3 bucket
         create_data_loader: This step create a dataloaders for train, val and test datasets
-        trainer: This step trains a pytorch model using the datasets
         validate_data: This step performs data integrity check on train, val and test datasets
+        trainer: This step trains a pytorch model using the datasets
         validate_data_model: This step performs data and model validation using trained model
         export_onnx : Export trained pytorch model to onnx
     """
