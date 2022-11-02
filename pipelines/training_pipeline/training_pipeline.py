@@ -49,10 +49,6 @@ def training_pipeline(
     # Run deepchecks on the datasets
     validate_data(train_loader, val_loader, test_loader, classes)
 
-    # Create a new data release if the tests pass
-    # if checks_passed:
-    #     logger.info("Data validation checks passed!")
-
     # Train the model
     model = trainer(
         train_loader=train_loader, val_loader=val_loader, classes=classes
