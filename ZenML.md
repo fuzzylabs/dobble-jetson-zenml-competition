@@ -40,6 +40,7 @@ Detailed configuration of all steps in the data pipeline in [config_data_pipelin
     # AWS secret access key
     export SECRET_ACCESS_KEY=""
     ```
+    Visit [AWS Account and Access Keys](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html) for information on how to get your access key ID and secret access key.
 
 ## Training Pipeline
 
