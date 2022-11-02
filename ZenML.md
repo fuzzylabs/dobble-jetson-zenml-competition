@@ -58,9 +58,13 @@ Detailed configuration of all steps in the training pipeline in [config_training
     * image_size : The size (width and height) of the image that will be resized to
     * num_worker : Number of workers for multi-process data loading
 
-3. `trainer` step : This step requires 12 parameters to creating a model using PyTorch and some are used as hyperparamaters for model training.
+3. `validate_data` step: This step requires 2 parameters for checking the integrity of the train, val and test dataset.
+    * net : The model to use for object detection
+    * use_pretrained : Whether to use pretrained backbone only or together with a pretrained detection head
+
+4. `trainer` step : This step requires 12 parameters to creating a model using PyTorch and some are used as hyperparamaters for model training.
     * models_folder : The path for where the trained model will be saved to
-    * net : The backbone network to use for object detection
+    * net : The model to use for object detection
     * use_pretrained : Whether to use pretrained backbone only or together with a pretrained detection head
     * lr : The learning rate for training the model
     * momentum: A hyperparamater used along with the SGD optimiser that helps to determine the direction to go during the gradient descent.
@@ -72,6 +76,8 @@ Detailed configuration of all steps in the training pipeline in [config_training
     * save_prediction : A boolean, save prediction images during the validation loop if True
     * prediction_folder : The path for saving the predictions images during the validation loop
 
-4. `export_onnx` step: This step requires 2 parameters to export the trained PyTorch model to ONNX format.
+5. `validate_data_model` step : This step does not require any parameters to run Deepchecks' full suite on the data and model.
+
+6. `export_onnx` step: This step requires 2 parameters to export the trained PyTorch model to ONNX format.
     * onnx_model_path : The path to save the ONNX format model
     * image_size : The image size to use for training
