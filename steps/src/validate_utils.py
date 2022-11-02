@@ -33,12 +33,12 @@ class DobbleData(DetectionData):
         label = []
         for annotation in tensor_annotations:
             if len(annotation["boxes"]):
-                bbox = torch.stack(annotation["boxes"])
+                bbox = annotation["boxes"]
                 # Convert the Pascal VOC xyxy format to xywh format
                 bbox[:, 2:] = bbox[:, 2:] - bbox[:, :2]
                 # The label shape is [class_id, x, y, w, h]
                 label.append(
-                    torch.concat([torch.stack(annotation["labels"]).reshape((-1, 1)), bbox], dim=1)
+                    torch.concat([torch.reshape(annotation["labels"], (-1, 1)), bbox], dim=1)
                 )
             else:
                 # If it's an empty image, we need to add an empty label
@@ -71,4 +71,5 @@ class DobbleData(DetectionData):
 
             processed_pred.append(
                 torch.concat([test_boxes, test_scores.reshape((-1, 1)), test_labels.reshape((-1, 1))], dim=1))
+
         return processed_pred

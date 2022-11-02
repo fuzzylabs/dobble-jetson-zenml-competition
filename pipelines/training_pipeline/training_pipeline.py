@@ -12,8 +12,7 @@ def training_pipeline(
     validate_data,
     trainer,
     # evaluator,
-    # validate_data,
-    # validate_model,
+    validate_data_model,
     export_onnx,
 ):
     """Training pipeline.
@@ -36,6 +35,8 @@ def training_pipeline(
     # specify the order - we need the data to be downloaded before creating
     # dataloaders from it
     create_data_loader.after(download_data)
+    trainer.after(validate_data)
+    validate_data_model.after(trainer)
 
     # download the data from the S3 bucket
     download_data()
@@ -44,11 +45,11 @@ def training_pipeline(
     train_loader, val_loader, test_loader, classes = create_data_loader()
 
         # Run deepchecks on the datasets
-    checks_passed = validate_data(train_loader, val_loader, test_loader, classes)
+    validate_data(train_loader, val_loader, test_loader, classes)
 
     # Create a new data release if the tests pass
-    if checks_passed:
-        logger.info("Data validation checks passed!")
+    # if checks_passed:
+    #     logger.info("Data validation checks passed!")
 
     # Train the model
     model = trainer(
@@ -57,6 +58,8 @@ def training_pipeline(
 
     # Evaluate the model
     # evaluator(model=model, test_loader=test_loader)
+
+    validate_data_model(train_loader, test_loader, model, classes)
 
     #
     # validate_data()

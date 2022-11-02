@@ -107,7 +107,7 @@ Directory Structure
     Install ZenML integrations required for the project
 
     ```bash
-    zenml integration install -y pytorch mlflow deepchecks
+    zenml integration install -y pytorch mlflow
     ```
 
     Initialize ZenML repo
@@ -135,7 +135,6 @@ Directory Structure
         -a default \
         -o default \
         -e mlflow_tracker \
-        -dv deepchecks_data_validator \
         --set
     ```
 

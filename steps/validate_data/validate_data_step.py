@@ -25,7 +25,7 @@ def data_integrity_check(
     val_loader: DataLoader,
     test_loader: DataLoader,
     classes: list,
-) -> Output(pass_checks=bool):
+) -> Output():
     """Perform data integrity checks on the train and test images.
 
     Arguments:
@@ -42,6 +42,7 @@ def data_integrity_check(
     }
 
     model = get_model(params, len(classes))
+    model.eval()
 
     training_data = DobbleData(data_loader=train_loader, label_map=LABEL_MAP)
     val_data = DobbleData(data_loader=val_loader, label_map=LABEL_MAP)
@@ -50,5 +51,3 @@ def data_integrity_check(
     training_data.validate_format(model, device=device)
     val_data.validate_format(model, device=device)
     test_data.validate_format(model, device=device)
-
-    return True

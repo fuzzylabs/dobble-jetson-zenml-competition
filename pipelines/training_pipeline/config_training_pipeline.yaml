@@ -64,7 +64,7 @@ steps:
       # T_max value for Cosine Annealing Scheduler
       t_max: 100
       # number of epochs
-      epochs: 100
+      epochs: 1
       # print frequency
       print_freq: 1
       # score threshold to filter bounding boxes
@@ -73,6 +73,9 @@ steps:
       save_prediction: True
       # directory to save images
       prediction_folder: "predictions/"
+  validate_data_model:
+    enable_cache: False
+    experiment_tracker: mlflow_tracker
   export_onnx:
     enable_cache: False
     experiment_tracker: mlflow_tracker
