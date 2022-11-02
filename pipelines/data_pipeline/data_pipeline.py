@@ -19,14 +19,12 @@ def data_pipeline(
      1. ingest_data: This step fetches the current Dobble data from Labelbox and saves it locally.
      2. prepare_labels: Step for converting labels from labelbox json to VOC format.
      3. split_data: Splits the data into training-validation and testing datasets.
-     4. validate_data: Run deepchecks validations on the data, returns True if tests pass.
-     5. upload_data: This step uploads everything in the data folder onto a S3 bucket.
+     4. upload_data: This step uploads everything in the data folder onto a S3 bucket.
 
     Args:
         ingest_data: This step fetches the current Dobble data from Labelbox and saves it locally.
         prepare_labels:  This step converts labels from labelbox json to VOC format.
         split_data : This step splits dataset into train-val and test in `train_test_split_ratio` ratio.
-        validate_data: This steps performs data integrity checks on the train and test datasets.
         upload_data: This step uploads everything in the data folder onto a S3 bucket.
     """
     # Specify execution order for the steps
