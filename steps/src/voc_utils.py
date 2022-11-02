@@ -37,8 +37,10 @@ class Annotation:
 
 def get_labels(labelbox_export: list) -> Sequence[str]:
     """Parse labels from json format.
+
     Args:
         labelbox_export (list): List of dictionary containing annotated labels
+
     Returns:
         Sequence[str]: Sequence of all unique labels
     """
@@ -54,10 +56,12 @@ def get_annotations(
     image_base_dir: str, label_base_dir: str, labelbox_export: list
 ) -> Sequence[Annotation]:
     """Create VOC and Annotation class objects from json format.
+
     Args:
         image_base_dir (str): Path to directory containing images
         label_base_dir (str): Path to directory to store labels in VOC format
         labelbox_export (list): List of dictionary containing annotated labels
+
     Returns:
         Sequence[Annotation]: Sequence of Annotation objects for all labels
     """
@@ -108,6 +112,7 @@ def create_data_directories(
     label_base_dir: str,
 ):
     """Create directories for storing labels.
+
     Args:
         label_base_dir (str): Path to store labels in VOC format
     """
@@ -118,8 +123,10 @@ def create_data_directories(
 
 def voc_object_to_xml(obj: VOCObject) -> str:
     """Create XML using VOCObject.
+
     Args:
         obj (VOCObject): VOC class object
+
     Returns:
         str: XML representation of object
     """
@@ -146,6 +153,7 @@ def save_annotations_to_xml(
     label_base_dir: str, annotations: Sequence[Annotation]
 ):
     """Save the annotations to xml file.
+
     Args:
         label_base_dir (str): Path to store labels in VOC format
         annotations (Sequence[Annotation]): Sequence of Annotation objects for all labels
@@ -178,6 +186,7 @@ def save_annotations_to_xml(
 
 def save_labels(label_base_dir: str, labels: Sequence[str]):
     """Save all unique labels to a text file.
+
     Args:
         label_base_dir (str): Path to store labels in VOC format
         labels (Sequence[str]): Sequence of all unique labels
@@ -191,6 +200,7 @@ def create_train_test_split(
     split_ratio: float, label_base_dir: str, annotations: Sequence[Annotation]
 ):
     """Split the dataset into train-val and test dataset in `split_ratio`.
+
     Args:
         split_ratio (float): A float in range [0, 1] specifying the split ratio
         label_base_dir (str): Path to store labels for both trainval and test dataset in VOC format

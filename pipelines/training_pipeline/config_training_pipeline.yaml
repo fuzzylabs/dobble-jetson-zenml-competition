@@ -39,12 +39,11 @@ steps:
       num_workers: 4
   validate_data:
     enable_cache: False
-    experiment_tracker: mlflow_tracker
     parameters:
-        # select model from ['fasterrcnn_mobilenet_v3_large_fpn', 'fasterrcnn_resnet50_fpn', 'ssdlite320_mobilenet_v3_large']
-        net: "ssdlite320_mobilenet_v3_large"
-        # if True pretrained backbone + pretrained  detection else pretrained backbone only
-        use_pretrained: False
+      # select model from ['fasterrcnn_mobilenet_v3_large_fpn', 'fasterrcnn_resnet50_fpn', 'ssdlite320_mobilenet_v3_large']
+      net: "ssdlite320_mobilenet_v3_large"
+      # if True pretrained backbone + pretrained  detection else pretrained backbone only
+      use_pretrained: False
   trainer:
     enable_cache: False
     experiment_tracker: mlflow_tracker

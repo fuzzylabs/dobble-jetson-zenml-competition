@@ -26,7 +26,9 @@ class DatasetSplitParameters(BaseParameters):
 @step
 def split_data(params: DatasetSplitParameters, jsonString: str) -> Output():
     """Split dataset into  train and test.
+
     It creates two labels text files `trainval.txt` and `test.txt`.
+
     Args:
         params (DatasetSplitParameters): Parameters for splitting dataset
         jsonString (str): string containing exported labels in json format

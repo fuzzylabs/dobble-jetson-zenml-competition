@@ -1,3 +1,4 @@
+"""Deepechecks format dataset."""
 import numpy as np
 import torch
 import torchvision
@@ -5,17 +6,25 @@ from deepchecks.vision.detection_data import DetectionData
 
 
 class DobbleData(DetectionData):
+    """DobbleData class in deepchecks format."""
 
     def __init__(self, *args, **kwargs):
+        """DobbleData class init."""
         super().__init__(*args, **kwargs)
 
-    def batch_to_images(self, batch):
+    def batch_to_images(self, batch: tuple) -> np.ndarray:
+        """Convert a batch of data to images in the expected format.
+
+        The expected format is an iterable of cv2 images, where each image is a numpy array of shape (height, width, channels).
+        The numbers in the array should be in the range [0, 255] in a uint8 format.
+
+        Args:
+            batch (tuple) : Dataloader batch
+
+        Returns:
+            np.ndarray : numpy array of shape (height, width, channels) in range [0, 255] in a uint8 format
         """
-        Convert a batch of data to images in the expected format. The expected format is an iterable of cv2 images,
-        where each image is a numpy array of shape (height, width, channels). The numbers in the array should be in the
-        range [0, 255] in a uint8 format.
-        """
-        inp = torch.stack(list(batch[0])).cpu().detach().numpy().transpose((0, 2, 3, 1))
+        inp = torch.stack(list(batch[0])).cpu().detach().numpy().transpose((0, 2, 3, 1))  # fmt: skip
         mean = 0
         std = 1
         # Un-normalize the images
@@ -23,11 +32,18 @@ class DobbleData(DetectionData):
         inp = np.clip(inp, 0, 1)
         return inp * 255
 
-    def batch_to_labels(self, batch):
-        """
-        Convert a batch of data to labels in the expected format. The expected format is a list of tensors of length N,
-        where N is the number of samples. Each tensor element is in a shape of [B, 5], where B is the number of bboxes
-        in the image, and each bounding box is in the structure of [class_id, x, y, w, h].
+    def batch_to_labels(self, batch: tuple) -> list:
+        """Convert a batch of data to labels in the expected format.
+
+        The expected format is a list of tensors of length N, where N is the number of samples. Each tensor element is in a shape of [B, 5],
+        where B is the number of bboxes in the image, and each bounding box is in the structure of [class_id, x, y, w, h].
+
+        Args:
+            batch (tuple) : Dataloader batch
+
+        Returns:
+            list : list containing tensors of shape [B, 5], where B is the number of bboxes in the image,
+                    and each bounding box is in the structure of [class_id, x, y, w, h].
         """
         tensor_annotations = batch[1]
         label = []
@@ -38,18 +54,28 @@ class DobbleData(DetectionData):
                 bbox[:, 2:] = bbox[:, 2:] - bbox[:, :2]
                 # The label shape is [class_id, x, y, w, h]
                 label.append(
-                    torch.concat([torch.reshape(annotation["labels"], (-1, 1)), bbox], dim=1)
+                    torch.concat([torch.reshape(annotation["labels"], (-1, 1)), bbox], dim=1)  # fmt: skip
                 )
             else:
                 # If it's an empty image, we need to add an empty label
                 label.append(torch.tensor([]))
         return label
 
-    def infer_on_batch(self, batch, model, device):
-        """
+    def infer_on_batch(self, batch, model, device) -> list:
+        """Perform inference on batch.
+
         Returns the predictions for a batch of data. The expected format is a list of tensors of shape length N, where N
         is the number of samples. Each tensor element is in a shape of [B, 6], where B is the number of bboxes in the
         predictions, and each bounding box is in the structure of [x, y, w, h, score, class_id].
+
+        Args:
+            batch (tuple): Dataloader batch
+            model (nn.Module) : Pytorch model
+            device (str): device indicating whether "cuda" or "cpu"
+
+        Returns:
+            list:  list containing tensors of shape [B, 6], where B is the number of bboxes in the predictions,
+                    and each bounding box is in the structure of [x, y, w, h, score, class_id].
         """
         nm_thrs = 0.2
         score_thrs = 0.7
@@ -59,11 +85,11 @@ class DobbleData(DetectionData):
             preds = model(imgs)
         processed_pred = []
         for pred in preds:
+            # fmt: off
             # Performoing non-maximum suppression on the detections
             keep_boxes = torchvision.ops.nms(pred['boxes'], pred['scores'], nm_thrs)
             score_filter = pred['scores'][keep_boxes] > score_thrs
-
-            # get the filtered result
+            # Get the filtered result
             test_boxes = pred['boxes'][keep_boxes][score_filter].reshape((-1, 4))
             test_boxes[:, 2:] = test_boxes[:, 2:] - test_boxes[:, :2]  # xyxy to xywh
             test_labels = pred['labels'][keep_boxes][score_filter]
@@ -71,5 +97,5 @@ class DobbleData(DetectionData):
 
             processed_pred.append(
                 torch.concat([test_boxes, test_scores.reshape((-1, 1)), test_labels.reshape((-1, 1))], dim=1))
-
+            # fmt: on
         return processed_pred

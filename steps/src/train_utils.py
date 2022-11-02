@@ -2,9 +2,8 @@
 import copy
 import math
 import os
-from typing import List
-
 from functools import partial
+from typing import List
 
 import mlflow
 import numpy as np
@@ -15,9 +14,6 @@ from rich.table import Table
 from torch import nn
 from torch.utils.data import DataLoader
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
-from torchvision.utils import draw_bounding_boxes, make_grid
-from zenml.logger import get_logger
-
 from torchvision.models import MobileNet_V3_Large_Weights, ResNet50_Weights
 from torchvision.models.detection import _utils as det_utils
 from torchvision.models.detection import (
@@ -26,6 +22,8 @@ from torchvision.models.detection import (
     ssdlite320_mobilenet_v3_large,
 )
 from torchvision.models.detection.ssdlite import SSDLiteClassificationHead
+from torchvision.utils import draw_bounding_boxes, make_grid
+from zenml.logger import get_logger
 
 logger = get_logger(__name__)
 

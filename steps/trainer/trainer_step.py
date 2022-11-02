@@ -12,10 +12,10 @@ from zenml.steps import BaseParameters, Output, step
 from steps.src.train_utils import (
     create_dir,
     display_and_log_metric,
+    get_model,
     save_best_model,
     test_one_epoch,
     train_one_epoch,
-    get_model
 )
 
 logger = get_logger(__name__)
@@ -57,7 +57,7 @@ def log_params_mlflow(params: TrainerParameters):
     Args:
         params (TrainerParameters): Paramters for trainer
     """
-    # log device
+    # Log device
     mlflow.log_param("device", device)
     # Log net to use
     mlflow.log_param("Net", params.net)
@@ -93,7 +93,7 @@ def trainer(
     Returns:
         nn.Module: Trained pytorch  model
     """
-    # check if models folder exists
+    # Check if models folder exists
     create_dir(params.models_folder)
     num_classes = len(classes)
     logger.info(f"Using {params.net} model for training")
@@ -111,18 +111,18 @@ def trainer(
     )
     logger.info(f"Using SGD optimizer with learning rate {params.lr}.")
 
-    # set learning rate policy
+    # Set learning rate policy
     last_epoch = -1
     logger.info("Using CosineAnnealingLR scheduler.")
     scheduler = CosineAnnealingLR(optimizer, params.t_max, last_epoch=last_epoch)  # fmt: skip
 
-    # train for the desired number of epochs
+    # Train for the desired number of epochs
     logger.info(f"Start training from epoch {last_epoch + 1}.")
 
     best_map, best_weights, best_epoch = float("-inf"), None, -1
     for epoch in range(last_epoch + 1, params.epochs):
         logger.info("------------------ Training Epoch {} ------------------".format(epoch))  # fmt: skip
-        # training loop
+        # Training loop
         train_loss = train_one_epoch(
             model_name=params.net,
             loader=train_loader,
@@ -135,7 +135,7 @@ def trainer(
         scheduler.step()
         if params.save_prediction:
             pred_folder = os.path.join(params.prediction_folder, str(epoch))
-        # validation loop
+        # Validation loop
         metric_dict = test_one_epoch(
             loader=val_loader,
             net=model,
@@ -145,7 +145,7 @@ def trainer(
             classes=classes,
             save_predictions=params.save_prediction,
         )
-        # show metrics output as table
+        # Show metrics output as table
         display_and_log_metric(metric_dict, epoch)
         curr_epoch_map = metric_dict["map"]
         # save model only if mAP metric has improved
@@ -162,7 +162,7 @@ def trainer(
     logger.info(
         f"Loading the best weights from epoch {best_epoch} with map {best_map}"
     )
-    # reinitialize model with best weights
+    # Reinitialize model with best weights
     model.load_state_dict(best_weights)
 
     # Log Pytorch model to mlflow as artifact
