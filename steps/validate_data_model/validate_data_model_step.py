@@ -1,7 +1,6 @@
 """Validate data and model step."""
 import mlflow
 import torch
-from deepchecks.core.suite import SuiteResult
 from deepchecks.vision.suites import full_suite
 from torch import nn
 from torch.utils.data import DataLoader
@@ -18,7 +17,7 @@ def validate_data_model(
     test_loader: DataLoader,
     model: nn.Module,
     classes: list,
-) -> Output(result=SuiteResult):
+) -> Output():
     """Perform data and model checks using `full_suite` check function in deepchecks.
 
     Args:
@@ -27,8 +26,6 @@ def validate_data_model(
         model (nn.Module) : Trained Pytorch model
         classes (list) : A list containing unique classes in the dataset
 
-    Returns:
-        SuiteResult: A HTML file containing results of the checks.
     """
     # LABEL_MAP is a dictionary that maps the class id to the class name
     LABEL_MAP = {i: c for i, c in enumerate(classes)}
@@ -42,5 +39,3 @@ def validate_data_model(
     result.save_as_html("full_suite.html")
     # Log results to Mlflow
     mlflow.log_artifact("full_suite.html", artifact_path="DeepChecksResult")
-
-    return result

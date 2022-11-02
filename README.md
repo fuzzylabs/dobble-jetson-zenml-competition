@@ -145,9 +145,3 @@ Directory Structure
     ```bash
     python run.py -dp -tp
     ```
-
-    Visualize deepchecks results.
-
-    ```bash
-    python visualise_deepchecks.py
-    ```
