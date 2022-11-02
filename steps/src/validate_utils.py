@@ -24,7 +24,7 @@ class DobbleData(DetectionData):
         Returns:
             np.ndarray : numpy array of shape (height, width, channels) in range [0, 255] in a uint8 format
         """
-        inp = torch.stack(list(batch[0])).cpu().detach().numpy().transpose((0, 2, 3, 1))  # fmt: skip
+        inp = torch.stack(list(batch[0])).cpu().detach().numpy().transpose((0, 2, 3, 1))  # fmt: skip, inp = input as input is a keyword
         mean = 0
         std = 1
         # Un-normalize the images
