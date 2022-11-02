@@ -4,6 +4,8 @@ import math
 import os
 from typing import List
 
+from functools import partial
+
 import mlflow
 import numpy as np
 import torch
@@ -15,6 +17,15 @@ from torch.utils.data import DataLoader
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from torchvision.utils import draw_bounding_boxes, make_grid
 from zenml.logger import get_logger
+
+from torchvision.models import MobileNet_V3_Large_Weights, ResNet50_Weights
+from torchvision.models.detection import _utils as det_utils
+from torchvision.models.detection import (
+    fasterrcnn_mobilenet_v3_large_fpn,
+    fasterrcnn_resnet50_fpn,
+    ssdlite320_mobilenet_v3_large,
+)
+from torchvision.models.detection.ssdlite import SSDLiteClassificationHead
 
 logger = get_logger(__name__)
 
@@ -350,3 +361,57 @@ def test_one_epoch(
                     unique_str=str(i),
                 )
     return metric.compute()
+
+
+def get_model(params, num_classes: int) -> nn.Module:
+    """Return a pytorch object detection model.
+
+    Args:
+        params (TrainerParameters): Parameters for training
+        num_classes (int): Number of classes in the dataset
+
+    Returns:
+        nn.Module: pytorch object detection model
+    """
+    if params.net == "fasterrcnn_mobilenet_v3_large_fpn":
+        model = fasterrcnn_mobilenet_v3_large_fpn(
+            weights=None,  # weights for fasterrccnn model
+            num_classes=num_classes,
+            weights_backbones=MobileNet_V3_Large_Weights.DEFAULT,  # pretrained backbone
+            image_mean=[0.485, 0.456, 0.406],  # same mean as backbone
+            image_std=[0.229, 0.224, 0.225],  # same std as trained by backbone
+        )
+    if params.net == "fasterrcnn_resnet50_fpn":
+        model = fasterrcnn_resnet50_fpn(
+            weights=None,  # weights for fasterrccnn model
+            num_classes=num_classes,
+            weights_backbones=ResNet50_Weights.DEFAULT,  # pretrained backbone
+            image_mean=[0.485, 0.456, 0.406],  # same mean as backbone
+            image_std=[0.229, 0.224, 0.225],  # same std as required by backbone
+        )
+    if params.net == "ssdlite320_mobilenet_v3_large":
+        if params.use_pretrained:
+            logger.info("Freezing backbone and ssd detection models")
+            model = ssdlite320_mobilenet_v3_large(
+                pretrained=True
+            )  # both backbone and detection pretrained
+            in_channels = det_utils.retrieve_out_channels(
+                model.backbone, (320, 320)
+            )  # get input channels
+            num_anchors = (
+                model.anchor_generator.num_anchors_per_location()
+            )  # number of anchors
+            norm_layer = partial(
+                nn.BatchNorm2d, eps=0.001, momentum=0.03
+            )  # batchnorm layer
+            # add a classification head on top with `num_classes` as output
+            model.head.classification_head = SSDLiteClassificationHead(
+                in_channels, num_anchors, num_classes, norm_layer
+            )
+        else:
+            model = ssdlite320_mobilenet_v3_large(
+                weights=None,  # weights for ssdlite320 model
+                num_classes=num_classes,
+                weights_backbones=MobileNet_V3_Large_Weights.DEFAULT,  # pretrained backbone
+            )
+    return model

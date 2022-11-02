@@ -9,6 +9,7 @@ logger = get_logger(__name__)
 def training_pipeline(
     download_data,
     create_data_loader,
+    validate_data,
     trainer,
     # evaluator,
     # validate_data,
@@ -41,6 +42,13 @@ def training_pipeline(
 
     # Create train, val and test dataloaders
     train_loader, val_loader, test_loader, classes = create_data_loader()
+
+        # Run deepchecks on the datasets
+    checks_passed = validate_data(train_loader, val_loader, test_loader, classes)
+
+    # Create a new data release if the tests pass
+    if checks_passed:
+        logger.info("Data validation checks passed!")
 
     # Train the model
     model = trainer(

@@ -10,7 +10,6 @@ def data_pipeline(
     ingest_data,
     prepare_labels,
     split_data,
-    validate_data,
     # create_data_release
     upload_data,
 ):
@@ -42,14 +41,6 @@ def data_pipeline(
 
     # Split the data into train-val and test datasets
     train, test = split_data(labels_json_string)
-
-    # Run deepchecks on the datasets
-    checks_passed = validate_data(train, test)
-
-    # Create a new data release if the tests pass
-    if checks_passed:
-        #     create_data_release()
-        logger.info("Data validation checks passed!")
 
     # Upload the data folder to S3 bucket
     upload_data()

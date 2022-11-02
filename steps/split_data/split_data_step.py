@@ -1,6 +1,5 @@
 """Split dataset."""
 import json
-from typing import List
 
 import mlflow
 from zenml.logger import get_logger
@@ -25,20 +24,12 @@ class DatasetSplitParameters(BaseParameters):
 
 
 @step
-def split_data(
-    params: DatasetSplitParameters, jsonString: str
-) -> Output(train=List[str], test=List[str]):
+def split_data(params: DatasetSplitParameters, jsonString: str) -> Output():
     """Split dataset into  train and test.
-
     It creates two labels text files `trainval.txt` and `test.txt`.
-
     Args:
         params (DatasetSplitParameters): Parameters for splitting dataset
         jsonString (str): string containing exported labels in json format
-
-    Returns:
-        train: a list of image files in the training dataset.
-        test: a list of image files in the testing dataset.
     """
     # Convert string from json.dumps to json
     labelbox_export = json.loads(jsonString)
@@ -49,11 +40,9 @@ def split_data(
     )
 
     # Split dataset
-    train, test = create_train_test_split(
+    create_train_test_split(
         params.train_test_split_ratio, params.label_base_dir, annotations
     )
 
     # Log split ratio to mlflow
     mlflow.log_param("train_test_split_ratio", params.train_test_split_ratio)
-    
-    return train, test
