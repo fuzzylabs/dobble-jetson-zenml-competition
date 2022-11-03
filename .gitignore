@@ -208,3 +208,12 @@ models
 
 # predictions folder
 predictions
+
+# vscode IDE
+.vscode
+
+# pycharm IDE
+.idea
+
+# deepchecks html
+*.html

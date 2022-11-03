@@ -14,9 +14,10 @@ from steps.labelbox_to_voc.labelbox_to_voc_step import prepare_labels_step
 from steps.split_data.split_data_step import split_data
 from steps.trainer.trainer_step import trainer
 from steps.upload_data.upload_data_step import upload_data
-
-# from steps.validate_data.validate_data_step import validate_data
-# from steps.create_data_release.create_data_release_step import create_data_release
+from steps.validate_data.validate_data_step import data_integrity_check
+from steps.validate_data_model.validate_data_model_step import (
+    validate_data_model,
+)
 
 
 def run_data_pipeline():
@@ -34,7 +35,9 @@ def run_training_pipeline():
     pipeline = training_pipeline(
         download_data(),
         create_data_loader(),
+        data_integrity_check(),
         trainer(),
+        validate_data_model(),
         evaluate_model(),
         export_onnx(),
     )
