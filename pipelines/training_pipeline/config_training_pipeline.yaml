@@ -78,6 +78,12 @@ steps:
   validate_data_model:
     enable_cache: False
     experiment_tracker: mlflow_tracker
+  evaluate_model:
+    enable_cache: False
+    experiment_tracker: mlflow_tracker
+    parameters:
+      # Intersection over Union threshold
+      iou_cutoff: 0.6
   export_onnx:
     enable_cache: False
     experiment_tracker: mlflow_tracker

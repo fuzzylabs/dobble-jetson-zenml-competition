@@ -133,6 +133,8 @@ def trainer(
             epoch=epoch,
         )
         scheduler.step()
+
+        # Evaluate the current model using the validation dataset and return results.
         if params.save_prediction:
             pred_folder = os.path.join(params.prediction_folder, str(epoch))
         # Validation loop
@@ -145,8 +147,8 @@ def trainer(
             classes=classes,
             save_predictions=params.save_prediction,
         )
-        # Show metrics output as table
-        display_and_log_metric(metric_dict, epoch)
+        # show metrics output as table
+        display_and_log_metric(metric_dict, is_val=True, epoch=epoch)
         curr_epoch_map = metric_dict["map"]
         # save model only if mAP metric has improved
         if curr_epoch_map > best_map:

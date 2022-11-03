@@ -11,8 +11,8 @@ def training_pipeline(
     create_data_loader,
     validate_data,
     trainer,
-    # evaluator,
     validate_data_model,
+    evaluate_model,
     export_onnx,
 ):
     """Training pipeline.
@@ -22,7 +22,7 @@ def training_pipeline(
     2. create_data_loader: This step create a dataloaders for train, val and test datasets.
     3. validate_data: This step performs data integrity check on train, val and test datasets.
     4. trainer: This step trains a pytorch model using the datasets.
-    5. evaluation:
+    5. evaluation: This step evaluates the trained model using the test dataset.
     6. validate_data_model: This step performs data and model validation using trained model.
     7. export_onnx: Export trained pytorch model to onnx
 
@@ -32,6 +32,7 @@ def training_pipeline(
         validate_data: This step performs data integrity check on train, val and test datasets
         trainer: This step trains a pytorch model using the datasets
         validate_data_model: This step performs data and model validation using trained model
+        evaluate_model: This step evaluates the trained model using the test dataset.
         export_onnx : Export trained pytorch model to onnx
     """
     # Specify the order - we need the data to be downloaded before creating
@@ -55,7 +56,7 @@ def training_pipeline(
     )
 
     # Evaluate the model
-    # evaluator(model=model, test_loader=test_loader)
+    evaluate_model(model=model, test_loader=test_loader, classes=classes)
 
     # Validate data and model
     validate_data_model(train_loader, test_loader, model, classes)
