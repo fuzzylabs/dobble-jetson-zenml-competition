@@ -76,8 +76,11 @@ Detailed configuration of all steps in the training pipeline in [config_training
     * save_prediction : A boolean, save prediction images during the validation loop if True
     * prediction_folder : The path for saving the predictions images during the validation loop
 
-5. `validate_data_model` step : This step does not require any parameters to run Deepchecks' full suite on the data and model.
+5. `evaluation` step : This step requires 1 parameter to evaluate the trained model using the test loader dataset.
+    * iou_cutoff : The intersection over union threshold
 
-6. `export_onnx` step: This step requires 2 parameters to export the trained PyTorch model to ONNX format.
+6. `validate_data_model` step : This step does not require any parameters to run Deepchecks' full suite on the data and model.
+
+7. `export_onnx` step: This step requires 2 parameters to export the trained PyTorch model to ONNX format.
     * onnx_model_path : The path to save the ONNX format model
     * image_size : The image size to use for training
