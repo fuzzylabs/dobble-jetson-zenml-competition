@@ -3,6 +3,7 @@ run_name: "dobble-run-1"
 settings:
   docker:
     build_context_root: .
+    required_integrations: ["pytorch", "mlflow"]
     requirements:
       - opencv-python==4.6.0.66
       - albumentations==1.3.0

@@ -3,6 +3,7 @@ run_name: "dobble-run-1"
 settings:
   docker:
     build_context_root: .
+    required_integrations: ["pytorch", "mlflow"]
     requirements:
       - boto3==1.25.3
       - pillow==9.2.0
