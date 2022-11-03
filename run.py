@@ -7,6 +7,7 @@ from pipelines.data_pipeline.data_pipeline import data_pipeline
 from pipelines.training_pipeline.training_pipeline import training_pipeline
 from steps.create_data_loader.create_data_loader_step import create_data_loader
 from steps.download_data.download_data_step import download_data
+from steps.evaluate_model.evaluate_model_step import evaluate_model
 from steps.export_onnx.export_onnx_step import export_onnx
 from steps.ingest_data.ingest_data_step import ingest_data
 from steps.labelbox_to_voc.labelbox_to_voc_step import prepare_labels_step
@@ -31,7 +32,11 @@ def run_data_pipeline():
 def run_training_pipeline():
     """Run all steps in training pipeline."""
     pipeline = training_pipeline(
-        download_data(), create_data_loader(), trainer(), export_onnx()
+        download_data(),
+        create_data_loader(),
+        trainer(),
+        evaluate_model(),
+        export_onnx(),
     )
     pipeline.run(
         config_path="pipelines/training_pipeline/config_training_pipeline.yaml"

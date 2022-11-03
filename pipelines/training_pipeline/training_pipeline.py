@@ -10,7 +10,7 @@ def training_pipeline(
     download_data,
     create_data_loader,
     trainer,
-    # evaluator,
+    evaluate_model,
     # validate_data,
     # validate_model,
     export_onnx,
@@ -21,7 +21,7 @@ def training_pipeline(
     1. download_data: This step downloads the data from the S3 bucket, bringing it into the pipeline
     2. create_data_loader: This step create a dataloaders for train, val and test datasets.
     3. trainer: This step trains a pytorch model using the datasets.
-    4. evaluation:
+    4. evaluation: This step evaluates the trained model using the test dataset.
     5. validate_data:
     6. validate_model:
     7. export_onnx: Export trained pytorch model to onnx
@@ -30,6 +30,7 @@ def training_pipeline(
         download_data: This step downloads the data from the S3 bucket
         create_data_loader: This step create a dataloaders for train, val and test datasets.
         trainer: This step trains a pytorch model using the datasets
+        evaluate_model: This step evaluates the trained model using the test dataset.
         export_onnx : Export trained pytorch model to onnx
     """
     # specify the order - we need the data to be downloaded before creating
@@ -48,7 +49,7 @@ def training_pipeline(
     )
 
     # Evaluate the model
-    # evaluator(model=model, test_loader=test_loader)
+    evaluate_model(model=model, test_loader=test_loader, classes=classes)
 
     #
     # validate_data()
