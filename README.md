@@ -1,10 +1,25 @@
 - [ZenML Competition](#zenml-competition)
+  - [What is Dobble?!](#what-is-dobble)
+  - [How will our model be deployed?](#how-will-our-model-be-deployed)
 - [Setup](#setup)
   - [One-time setup](#one-time-setup)
   - [ZenML local setup](#zenml-local-setup)
   - [ZenML mlops stack recipe](#zenml-mlops-stack-recipe)
 
 # ZenML Competition
+This repository is an entry to the [ZenML Month of MLOps competition](https://zenml.notion.site/ZenML-s-Month-of-MLOps-Competition-Announcement-3c59f628447c48f1944035de85ff1a5f).
+
+## What is Dobble?!
+[Dobble](https://www.dobblegame.com/en/games/) is:
+> a speed and observation game for the whole family. The aim of the game?
+Each two cards have one symbol in common. Be the first to find and name it to win the card.
+
+And we, at [Fuzzy Labs](https://www.fuzzylabs.ai/), are trying to become the world champions. 
+
+So we've come up with a plan. We need to create a ML model to recognise the common symbol between two cards, and what better way to make it than with a ZenML pipeline?
+
+## How will our model be deployed?
+As we are trying to win the Dobble world championships our device must be concealable. Therefore, we're deploying our model onto a [NVIDIA Jetson Nano](https://www.nvidia.com/en-gb/autonomous-machines/embedded-systems/jetson-nano/education-projects/). 
 
 # Setup
 
