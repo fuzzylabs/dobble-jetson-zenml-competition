@@ -6,7 +6,7 @@ from card import *
 import cv2
 from fetch_model import fetch_onnx_from_mlflow
 
-NET_DIR="model/"
+NET_DIR="model"
 
 def are_overlapping(a, b):
     ax0, ax1, ay0, ay1 = a.Left, a.Right, a.Top, a.Bottom
