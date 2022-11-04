@@ -15,10 +15,10 @@ This repository contains The Dobblegängers (a.k.a., Fuzzy Labs) submission to [
 
 ## The Dobblegängers
 
-1. [Christopher Norman](https://github.com/Christopher-Norman)
+1. [Misha Iakovlev](https://github.com/d-lowl)
 2. [Shubham Gandhi](https://github.com/dudeperf3ct)
 3. [Oscar Wong](https://github.com/osw282)
-4. [Misha Iakovlev](https://github.com/d-lowl)
+4. [Christopher Norman](https://github.com/Christopher-Norman)
 5. [Jon Carlton](https://github.com/JonoCX)
 
 ## What have we done?
