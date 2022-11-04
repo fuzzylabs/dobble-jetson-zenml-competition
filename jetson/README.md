@@ -5,6 +5,15 @@
 sudo docker build -t fuzzylabs/dobble-jetson-nano .
 ```
 
+## Authenticate MLflow Server
+
+The following environment variables allow passing HTTP authentication to the tracking server:
+
+```bash
+export MLFLOW_TRACKING_USERNAME="<fill-me>"
+export MLFLOW_TRACKING_PASSWORD="<fill-me>"
+```
+
 ## Run
 ```
 sudo docker run --rm -it --runtime nvidia -v model:/dobble/model $additional_flags fuzzylabs/dobble-jetson-nano $source [$output]
