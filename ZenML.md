@@ -1,6 +1,7 @@
 # ZenML
 
 Overall Diagram of ZenML pipelines:
+
 <img src="assets/ZenMLPipeline.png"  width="600">
 
 ## Data Pipeline
