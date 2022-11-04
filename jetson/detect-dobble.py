@@ -4,6 +4,7 @@ import argparse
 from card_detection import detect_cards
 from card import *
 import cv2
+from fetch_model import fetch_onnx_from_mlflow
 
 NET_DIR="model/"
 
@@ -28,7 +29,7 @@ def remove_overlaps(detections):
 
 def detect_dobble():
     net = jetson.inference.detectNet(
-        argv=[f"--model={NET_DIR}/dobble_model.onnx", f"--labels={NET_DIR}/labels.txt", "--input-blob=input_0", "--output-cvg=scores", "--output-bbox=boxes"],
+        argv=[f"--model={NET_DIR}/onnx_model/model.onnx", f"--labels={NET_DIR}/labels.txt", "--input-blob=input_0", "--output-cvg=scores", "--output-bbox=boxes"],
         threshold=0.5
     )
 
@@ -71,12 +72,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Detect Dobble images")
 
     parser.add_argument("source", type=str, help="Source to detect Dobble images on. Can be an image or a video stream (either a file or a device)")
+    parser.add_argument("run_id", type=str, help="Run ID corresponding to best performing MLFlow model")
     parser.add_argument("output", type=str, nargs='?', help='Filename to output to')
 
     args = parser.parse_args()
 
-    # TODO configuration to connect to the remote ZenML server using credentials
-    # fetch_onnx_from_zenml() # TODO check if we already have the latest model
+    fetch_onnx_from_mlflow(tracking_uri, run_id, NET_DIR)
     detect_dobble()
 
 
