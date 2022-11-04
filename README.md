@@ -53,7 +53,7 @@ This repository contains all the code and resources to set up and run a data pip
 
 ```
 
-As we've also used some cloud resources to store data and host experiment tracking, we used one of the ZenML stack recipes. There's more information on this [here](docs/stack_recipe_readme.md)
+As we've also used some cloud resources to store data and host experiment tracking, we used one of the ZenML stack recipes. There's more information on this [here](docs/stack_recipe_readme.md).
 
 ## Project Overview
 
@@ -124,6 +124,10 @@ python run.py -dp       # run the data pipeline only
 python run.py -tp       # run the training pipeline only
 python run.py -dp -tp   # run both the data and training pipelines
 ```
+
+## Setup using the Stack Recipe
+
+Please see [here](docs/stack_recipe_readme.md) for a detailed guide on what we've modified in the `aws-minimal` stack recipe and how to run it
 
 ## Blog Posts & Demo
 
