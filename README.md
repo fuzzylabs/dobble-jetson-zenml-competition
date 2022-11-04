@@ -1,4 +1,9 @@
-- [ZenML Competition](#zenml-competition)
+# The Dobblegängers Month of MLOps Submission
+
+This repository contains The Dobblegängers (a.k.a., Fuzzy Labs) submission to [ZenML Month of MLOps competition](https://zenml.notion.site/ZenML-s-Month-of-MLOps-Competition-Announcement-3c59f628447c48f1944035de85ff1a5f)
+
+## Contents
+ 
   - [What is Dobble?!](#what-is-dobble)
   - [How will our model be deployed?](#how-will-our-model-be-deployed)
 - [Setup](#setup)
@@ -6,20 +11,47 @@
   - [ZenML local setup](#zenml-local-setup)
   - [ZenML mlops stack recipe](#zenml-mlops-stack-recipe)
 
-# ZenML Competition
-This repository is an entry to the [ZenML Month of MLOps competition](https://zenml.notion.site/ZenML-s-Month-of-MLOps-Competition-Announcement-3c59f628447c48f1944035de85ff1a5f).
+## The Dobblegängers
 
-## What is Dobble?!
-[Dobble](https://www.dobblegame.com/en/games/) is:
-> a speed and observation game for the whole family. The aim of the game?
-Each two cards have one symbol in common. Be the first to find and name it to win the card.
+- [Christopher Norman](https://github.com/Christopher-Norman)
+- [Shubham Gandhi](https://github.com/dudeperf3ct)
+- [Oscar Wong](https://github.com/osw282)
+- [Misha Iakovlev](https://github.com/d-lowl)
+- [Jon Carlton](https://github.com/JonoCX)
 
-And we, at [Fuzzy Labs](https://www.fuzzylabs.ai/), are trying to become the world champions. 
+## What have we done?
 
-So we've come up with a plan. We need to create a ML model to recognise the common symbol between two cards, and what better way to make it than with a ZenML pipeline?
+At [Fuzzy Labs](https://www.fuzzylabs.ai/) we're trying to become Dobble world champions. So, we came up with a plan - we've trained an ML model to recognise the common symbol between two cards, and what better way to make it than with a ZenML pipeline.
 
-## How will our model be deployed?
-As we are trying to win the Dobble world championships our device must be concealable. Therefore, we're deploying our model onto a [NVIDIA Jetson Nano](https://www.nvidia.com/en-gb/autonomous-machines/embedded-systems/jetson-nano/education-projects/). 
+If you're reading this and wondering: what on earth is [Dobble](https://www.dobblegame.com/en/games/)? Let us explain. It's a game of speed and observation where the aim is to be the quickest to identify the common symbol between two cards. If you're the first to find it and name it, then you win the card. Simple, right? It essence, it's a more sophisticated version of snap.
+
+Now that you're all caught up, let's go into a little more detail about what we've done. Obviously as we're wanting to win the world championships, we need a concealable device. So, to also provide an extra challenge, we decided to deploy our model to a [NVIDIA Jetson Nano](https://www.nvidia.com/en-gb/autonomous-machines/embedded-systems/jetson-nano/education-projects/).
+
+## Code & Repository Structure
+
+This repository contains all the code and resources to set up and run a data pipeline, training pipeline, and inference on the Jetson. It's structured as follows:
+
+```bash
+.
+├── LICENSE
+├── pyproject.toml
+├── README.md
+├── requirements.txt                        # dependencies required for the project
+├── docs                                    # detailed documentation for the project
+├── pipelines                               # all pipelines inside this folder
+│   └── training_pipeline
+        └── training_pipeline.py
+        └── config_training_pipeline.yaml   # each pipeline will have one config file containing information regarding step and other configuration
+├── run.py                                  # main file where all pipelines can be run
+└── steps                                   # all steps inside this folder
+    └── data_preprocess                     # each step is in its own folder (as per ZenML best practises)
+        └── data_preprocess_step.py
+    └── src                                 # extra utilities that are required by steps added in this folder
+└── zenml_stack_recipes                     # contains the modified aws-minimal stack recipe
+
+```
+
+As we've also used some cloud resources to store data and host experiment tracking, we used one of the ZenML stack recipes. There's more information on this [here](docs/stack_recipe_readme.md)
 
 # Setup
 
