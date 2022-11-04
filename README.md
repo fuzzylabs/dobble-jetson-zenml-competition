@@ -1,289 +1,147 @@
-- [ZenML Competition](#zenml-competition)
-  - [What is Dobble?!](#what-is-dobble)
-  - [How will our model be deployed?](#how-will-our-model-be-deployed)
+# The Dobblegängers Month of MLOps Submission
+
+This repository contains The Dobblegängers (a.k.a., Fuzzy Labs) submission to [ZenML Month of MLOps competition](https://zenml.notion.site/ZenML-s-Month-of-MLOps-Competition-Announcement-3c59f628447c48f1944035de85ff1a5f)
+
+## Contents
+
+- [The Dobblegängers](#the-dobblegängers)
+- [What have we done?](#what-have-we-done)
+- [Code & Repository Structure](#code--repository-structure)
+- [Project Overview](#project-overview)
 - [Setup](#setup)
-  - [One-time setup](#one-time-setup)
-  - [ZenML local setup](#zenml-local-setup)
-  - [ZenML mlops stack recipe](#zenml-mlops-stack-recipe)
+- [Running the Pipelines](#running-the-pipelines)
+- [Blog Posts & Demo](#blog-posts--demo)
+ 
 
-# ZenML Competition
-This repository is an entry to the [ZenML Month of MLOps competition](https://zenml.notion.site/ZenML-s-Month-of-MLOps-Competition-Announcement-3c59f628447c48f1944035de85ff1a5f).
+## The Dobblegängers
 
-## What is Dobble?!
-[Dobble](https://www.dobblegame.com/en/games/) is:
-> a speed and observation game for the whole family. The aim of the game?
-Each two cards have one symbol in common. Be the first to find and name it to win the card.
+1. [Misha Iakovlev](https://github.com/d-lowl)
+2. [Shubham Gandhi](https://github.com/dudeperf3ct)
+3. [Oscar Wong](https://github.com/osw282)
+4. [Christopher Norman](https://github.com/Christopher-Norman)
+5. [Jon Carlton](https://github.com/JonoCX)
 
-And we, at [Fuzzy Labs](https://www.fuzzylabs.ai/), are trying to become the world champions. 
+## What have we done?
 
-So we've come up with a plan. We need to create a ML model to recognise the common symbol between two cards, and what better way to make it than with a ZenML pipeline?
+At [Fuzzy Labs](https://www.fuzzylabs.ai/) we're trying to become Dobble world champions. So, we came up with a plan - we've trained an ML model to recognise the common symbol between two cards, and what better way to make it than with a ZenML pipeline.
 
-## How will our model be deployed?
-As we are trying to win the Dobble world championships our device must be concealable. Therefore, we're deploying our model onto a [NVIDIA Jetson Nano](https://www.nvidia.com/en-gb/autonomous-machines/embedded-systems/jetson-nano/education-projects/). 
+If you're reading this and wondering: what on earth is [Dobble](https://www.dobblegame.com/en/games/)? Let us explain. It's a game of speed and observation where the aim is to be the quickest to identify the common symbol between two cards. If you're the first to find it and name it, then you win the card. Simple, right? It essence, it's a more sophisticated version of snap.
 
-# Setup
+Now that you're all caught up, let's go into a little more detail about what we've done. Obviously as we're wanting to win the world championships, we need a concealable device. So, to also provide an extra challenge, we decided to deploy our model to a [NVIDIA Jetson Nano](https://www.nvidia.com/en-gb/autonomous-machines/embedded-systems/jetson-nano/education-projects/).
 
-## One-time setup
+## Code & Repository Structure
 
-This setup is required to configure pre-commit hooks.
-
-1. Create a virtual environment (conda, pip, virtualenv, poetry) and activate it. Recommened python version 3.8
-
-2. Inside the virtual environment, install requirements and pre-commit required for setting up the project.
-
-    ```bash
-    pip install -r setup-requirements.txt
-    pre-commit install
-    ```
-
-    Or with Conda
-
-    ```bash
-    conda install -c conda-forge pre-commit
-    ```
-
-    This will install different tools that we use for pre-commit hooks.
-
-3. `pre-commit` hooks will run whenever we run `git commit -m` command. To skip some of the checks run
-
-    ```bash
-    SKIP=flake8 git commit -m "foo"
-    ```
-
-    To run pre-commit before commiting changes, run
-
-    ```bash
-    pre-commit run --all-files
-    ```
-
-    To check individual fails, run the following commands for particular pre-commit
-
-    Interrogate pre-commit
-
-    ```bash
-    interrogate -c pyproject.toml -vv
-    ```
-
-    Flake8 pre-commit
-
-    ```bash
-    flake8 .
-    ```
-
-    isort pre-commit
-
-    ```bash
-    isort . --settings-path=pyproject.toml
-    ```
-
-    Black pre-commit
-
-    ```bash
-    black . --config pyproject.toml --check
-    ```
-
-    pydocstyle pre-commit, list of [error codes](https://www.pydocstyle.org/en/stable/error_codes.html)
-
-    ```bash
-    pydocstyle .  -e --count --convention=google --add-ignore=D403
-    ```
-
-    darglint pre-commit, list of [error codes](https://github.com/terrencepreilly/darglint#error-codes)
-
-    ```bash
-    darglint -v 2 .
-    ```
-
-## ZenML Local Setup
-
-This setup is required to run ZenML pipelines locally.
-
-Directory Structure
+This repository contains all the code and resources to set up and run a data pipeline, training pipeline, and inference on the Jetson. It's structured as follows:
 
 ```bash
 .
 ├── LICENSE
 ├── pyproject.toml
 ├── README.md
-├── requirements.txt                 # dependencies required for zenml project
-├── setup-requirements.txt           # dependencies required for precommit
-├── pipelines                  # all pipelines inside this folder
+├── requirements.txt                        # dependencies required for the project
+├── docs                                    # detailed documentation for the project
+├── pipelines                               # all pipelines inside this folder
 │   └── training_pipeline
         └── training_pipeline.py
-        └── config_training_pipeline.yaml  # each pipeline will have one config file containing information regarding step and other configuration
-├── run.py                     # main file where all pipelines can be run
-└── steps                      # all steps inside this folder
-    └── data_preprocess
+        └── config_training_pipeline.yaml   # each pipeline will have one config file containing information regarding step and other configuration
+├── run.py                                  # main file where all pipelines can be run
+└── steps                                   # all steps inside this folder
+    └── data_preprocess                     # each step is in its own folder (as per ZenML best practises)
         └── data_preprocess_step.py
-    └── src                    # extra utilities that are required by steps added in this folder
+    └── src                                 # extra utilities that are required by steps added in this folder
+└── zenml_stack_recipes                     # contains the modified aws-minimal stack recipe
 
 ```
 
-1. Use the same virtual environment created in above step(conda, pip, virtualenv, poetry).
+As we've also used some cloud resources to store data and host experiment tracking, we used one of the ZenML stack recipes. There's more information on this [here](docs/stack_recipe_readme.md)
 
-2. Install requirements inside the already created environment
+## Project Overview
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+To give an overview of our solution (see [here](docs/pipelines_overview.md) for an in-depth description), we've broken this challenge down into three stages, with two pipelines:
 
-3. Running ZenML Locally
+### [Data Pipeline](docs/pipelines_overview.md#data-pipeline)
 
-    Install ZenML integrations required for the project
+This downloads the labelled data, processes it into the correct format for training, and uploads to an S3 bucket.
 
-    ```bash
-    zenml integration install -y pytorch mlflow
-    ```
+### [Training Pipeline](docs/pipelines_overview.md#training-pipeline)
 
-    Initialize ZenML repo
+This pipeline downloads the data, validates the data, trains and evaluates a model, and exports to the correct format for deployment.
 
-    ```bash
-    zenml init
-    ```
+### Deployment Stage
 
-    Start ZenServer
+Here, the trained model is loaded onto the device and inference is performed in real-time
 
-    ```bash
-    zenml up   # start ZenServer
-    ```
+## Setup
 
-    > **Note**
-    > Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
-    > If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again, for MacOS, run `kill $(lsof -t -i:8237)`.
+The first step is creating a virtual environment and install the project requirements, we've used `conda` but feel free to use whatever you prefer (as long as you can install a set of requirements):
 
-    By default zenml comes with a stack that runs locally. We will add mlflow as experiment tracker to this local stack. We use this stack to test pipelines locally.
+```bash
+conda create -n dobble_venv python=3.8 -y
+pip install -r requirements.txt
+```
 
-    ```bash
-    zenml experiment-tracker register mlflow_tracker --flavor=mlflow
-    zenml stack register fuzzy_stack \
-        -a default \
-        -o default \
-        -e mlflow_tracker \
-        --set
-    ```
+The next step is to setup ZenML, with the first step being to install the required integrations:
 
-    > **Note**
-    > If there stack already exists by checking `zenml stack list`, activate the stack by running `zenml stack set fuzzy_stack`.
+```bash
+zenml integrations install -y pytorch mlflow
+```
 
-    Run ZenML pipelines.
+Initialise the ZenML repository
 
-    ```bash
-    python run.py -dp      # run data pipeline only
-    python run.py -tp      # run training pipeline only
-    python run.py -dp -tp  # run both data and training pipeline
-    ```
+```bash
+zenml init
+```
 
-## ZenML MLOps Stack Recipe
+Start the ZenServer
 
-The repo contains terraform configuration for resources for running ZenML pipelines on AWS. A detailed information of how this stack is created is outlined in [ZenML Recipe](ZenML_recipe.md).
+```bash
+zenml up
+```
 
-Pre-requsities:
+> **Note**
+> Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
+> If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again, for MacOS, run `kill $(lsof -t -i:8237)`.
 
-- [tfenv](https://github.com/tfutils/tfenv) and Terraform : `tfenv install && tfenv use`
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-- Install zenml stack :  `pip install "zenml[stacks]"`
-- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+By default, ZenML comes with a stack which runs locally. Next, we add MLflow as an experiment tracker to this local stack, which is we'll run the pipelines:
 
-1. :zap: Configure AWS : Follow [this guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) to configure aws credentials using AWS CLI (`aws configure`).
+```bash
+zenml experiment-tracker register mlflow_tracker --flavor=mlflow
+zenml stack register fuzzy_stack \
+    -a default \
+    -o default \
+    -e mlflow_tracker \
+    --set
+```
 
-    > **Note**
-    > Set `Default region name` to `eu-west-2`.
+You're now in a position where you can run the pipelines locally.
 
-2. :closed_lock_with_key: Add your secret information like keys and passwords into the `values.tfvars.json` file which is not committed and only exists locally.
+## Running the Pipelines
 
-    Create a file named `values.tfvars.json` under `zenml_stack_recipes/aws_minimal` directory with following contents.
+We have a couple of options for running the pipelines, specified by flags:
 
-    ```json
-        {
-            "mlflow-artifact-S3-access-key" : "<fill-me>",
-            "mlflow-artifact-S3-secret-key" : "<fill-me>",
-            "mlflow-username"               : "<fill-me>",
-            "mlflow-password"               : "<fill-me>",
-            "zenml-version"                 : "0.20.5"
-        }
-    ```
+```bash
+python run.py -dp       # run the data pipeline only
+python run.py -tp       # run the training pipeline only
+python run.py -dp -tp   # run both the data and training pipelines
+```
 
-     - Add  `aws_access_key_id` to `mlflow-artifact-S3-access-key`.
-     - Add `aws_secret_access_key` to  `mlflow-artifact-S3-secret-key`.
-     - Add `mlflow-username` and `mlflow-password` as well.
+## Blog Posts & Demo
 
-    > **Note**
-    > These secrets can be accessed by runnning `cat ~/.aws/credentials`.
+As part of our submission, we've written a series of blogs on our website. Each of the blogs has an accompanying video.
 
-3. :rocket: Deploy the recipe with this simple command.
+### Introduction
 
-    Navigate to directory containing terraform files.
+https://www.youtube.com/watch?v=j9TAVpM5NRQ
 
-    ```bash
-    cd zenml_stack_recipes/aws_minimal
-    ```
+### About the Edge
 
-    ```bash
-    terraform init
-    terraform plan
-    terraform apply
-    terraform output
-    ```
+https://www.youtube.com/watch?v=djliB4QnuoQ
 
-4. :hammer: Upon successfully provisioning all resources and making sure kubectl configured to eks cluster. `kubectl get namespaces` should contain `ingress-nginx`.
+### The Data Science
 
-    To deploy ZenServer, create a file named `zen_server.tfvars.json` and fill in the content
+Video: https://www.youtube.com/watch?v=gCAzpyE0Zr8
+Blog: https://www.fuzzylabs.ai/blog-post/zenmls-month-of-mlops-data-science-edition
 
-    ```json
-        {
-            "name": "dobble",
-            "provider": "aws",
-            "username": "<fill-me>",
-            "password": "<fill-me>",
-            "create_ingress_controller": "false",
-            "ingress_controller_hostname": "<fill-me>",
-            "zenmlserver_image_tag": "0.20.5"
-        }
-    ```
+### Pipelines on the Edge
 
-    To get value of `ingress_controller_hostname`, run following
-
-    ```bash
-    # copy the LoadBalancer Ingress from the output of command
-    kubectl describe svc nginx-controller-ingress-nginx-controller -n ingress-nginx
-    ```
-    
-    Deploy the ZenServer using the command below.
-    
-     ```bash
-    zenml deploy --config zen_server.tfvars.json
-    ```
-    
-    After the server is created, you can visit the output url and login with the credentials supplied above to access ZenServer dashboard.
-
-5. :page_with_curl: A ZenML stack configuration file (ex: `aws_minimal_stack_<something>.yaml`) gets created after the previous command executes :exploding_head:! This YAML file can be imported as a ZenML stack manually by running the following command.
-
-    ```bash
-    zenml stack import -f <path-to-the-created-stack-config-yaml> <stack-name>
-    ```
-
-    Run zenml pipelines using the above created stack, once it is set as active. Update the configuration files `.yaml` to use appropriate experiment_tracker, etc.
-
-    ```bash
-    zenml stack set <stack-name>
-    ```
-
-    After the stack is set active, we can run zenml pipelines using this stack.
-
-6. :bomb: Delete the provisioned resources.
-
-    ```bash
-    terraform destroy
-    ```
-
-7. :sparkler: Destory ZenServer.
-
-    ```bash
-    zenml destroy
-    ```
-
-8. :broom: You can also remove all the downloaded recipe files from the pull execution by using the clean command.
-
-    ```bash
-    zenml stack recipe clean
-    ```
+Blog: https://www.fuzzylabs.ai/blog-post/mlops-pipeline-on-the-edge 
