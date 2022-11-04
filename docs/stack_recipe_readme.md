@@ -35,7 +35,17 @@ In this repository, we have used this fanatastic repo : [Open Source MLOps Stack
     * Change `prefix` from `prefix` to `dobble`.
     * Change `region` from `eu-west-1` to `eu-west-2`.
 
-4. :tada: The resulting terraform configuration is committed to the Git repository.
+4. :bug: There is a bug in the stack recipe with respect to the mlflow tracking uri in `output_file.tf` file.
+
+    * Change `tracking_uri` from:
+    
+        `"http://${data.kubernetes_service.mlflow_tracking.status.0.load_balancer.0.ingress.0.hostname}"` 
+
+        to
+
+        `"http://${data.kubernetes_service.mlflow_tracking.status.0.load_balancer.0.ingress.0.hostname}/mlflow"`
+
+5. :tada: The resulting terraform configuration is committed to the Git repository.
 
 ## Setup
 
@@ -82,18 +92,19 @@ Pre-requsities:
 
     ```bash
     terraform init
-    terraform plan
-    terraform apply
+    terraform plan --var-file values.tfvars.json
+    terraform apply --var-file values.tfvars.json
     terraform output
     ```
 
-4. :hammer: Upon successfully provisioning all resources and making sure kubectl configured to eks cluster. `kubectl get namespaces` should contain `ingress-nginx`.
+4. :hammer: (Optional) Upon successfully provisioning all resources and making sure kubectl configured to eks cluster. `kubectl get namespaces` should contain `ingress-nginx`.
 
     To deploy ZenServer, create a file named `zen_server.tfvars.json` and fill in the content
 
     ```json
         {
             "name": "dobble",
+            "region": "eu-west-2",
             "provider": "aws",
             "username": "<fill-me>",
             "password": "<fill-me>",
@@ -118,7 +129,37 @@ Pre-requsities:
     
     After the server is created, you can visit the output url and login with the credentials supplied above to access ZenServer dashboard.
 
-5. :page_with_curl: A ZenML stack configuration file (ex: `aws_minimal_stack_<something>.yaml`) gets created after the previous command executes :exploding_head:! This YAML file can be imported as a ZenML stack manually by running the following command.
+    Connect to the ZenServer:
+
+    ```bash
+    zenml connect --url=<fill-me> --username=<fill-me> --password=<fill-me> --no-verify-ssl
+    ```
+
+5. :page_with_curl: A ZenML stack configuration file (ex: `aws_minimal_stack_<something>.yaml`) gets created after the previous command executes :exploding_head:! 
+
+Here we are going to modify the generated configuration file to run the pipelines locally instead of on kubernetes. To do so, we change the contents in `aws_minimal_stack_<something>.yaml` as following:
+
+Replace the orchestrator configuration from
+
+```yaml
+orchestrator:
+id: <something>
+flavor: kubernetes
+name: eks_kubernetes_orchestrator
+configuration: {"kubernetes_context": "terraform", "synchronous": True}
+```
+
+to
+
+```yaml
+orchestrator:
+id: <something>
+flavor: local
+name: local_orchestrator
+configuration: {}
+```
+
+For consistency with naming experiment tracker in yaml configuration of the pipelines, we replace the name in `experiment_tracker` from `name: eks_mlflow_experiment_tracker` to `name: mlflow_tracker`.
 
     ```bash
     zenml stack import -f <path-to-the-created-stack-config-yaml> <stack-name>
@@ -130,7 +171,17 @@ Pre-requsities:
     zenml stack set <stack-name>
     ```
 
-    After the stack is set active, we can run zenml pipelines using this stack.
+    Install required integrations for running training pipeline on AWS:
+
+    ```bash
+    zenml instgration install s3 aws pytorch mlflow -y
+    ```
+
+    After the stack is set to active and integrations are installed, we can run the zenml pipelines using this stack:
+
+    ```bash
+    python run.py -dp -tp
+    ```
 
 6. :bomb: Delete the provisioned resources.
 

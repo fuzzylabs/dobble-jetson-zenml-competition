@@ -31,7 +31,7 @@ resource "local_file" "stack_file" {
         id: ${uuid()}
         flavor: mlflow
         name: eks_mlflow_experiment_tracker
-        configuration: {"tracking_uri": "http://${data.kubernetes_service.mlflow_tracking.status.0.load_balancer.0.ingress.0.hostname}", "tracking_username": "${var.mlflow-username}", "tracking_password": "${var.mlflow-password}"}
+        configuration: {"tracking_uri": "http://${data.kubernetes_service.mlflow_tracking.status.0.load_balancer.0.ingress.0.hostname}/mlflow", "tracking_username": "${var.mlflow-username}", "tracking_password": "${var.mlflow-password}"}
     ADD
   filename = "./aws_minimal_stack_${replace(substr(timestamp(), 0, 16), ":", "_")}.yaml"
 }
