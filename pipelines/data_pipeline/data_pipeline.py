@@ -10,7 +10,6 @@ def data_pipeline(
     ingest_data,
     prepare_labels,
     split_data,
-    # create_data_release
     upload_data,
 ):
     """Data pipeline.
