@@ -10,7 +10,7 @@ pascal-voc==0.0.3
 pillow==9.2.0
 seaborn==0.12.1
 torchmetrics==0.10.1
-torchvision
+torchvision==0.13.0
 zenml[server]==0.20.5
 black==22.10.0
 darglint==1.8.1
