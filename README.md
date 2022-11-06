@@ -77,6 +77,7 @@ The first step is creating a virtual environment and install the project require
 
 ```bash
 conda create -n dobble_venv python=3.8 -y
+conda activate dobble_venv
 pip install -r requirements.txt
 ```
 
