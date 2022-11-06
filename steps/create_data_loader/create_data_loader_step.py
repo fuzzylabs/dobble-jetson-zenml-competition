@@ -58,7 +58,7 @@ def log_params_mlflow(
     # Log number of workers for multi-process data loading
     mlflow.log_param("Num workers", params.num_workers)
     # Log classes
-    mlflow.log_param("Classes", classes)
+    mlflow.log_text(str(classes), "classes.txt")
     # Log number of classes
     mlflow.log_param("Num classes", len(classes))
     # Log number of train samples

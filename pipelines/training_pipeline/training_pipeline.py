@@ -9,10 +9,10 @@ logger = get_logger(__name__)
 def training_pipeline(
     download_data,
     create_data_loader,
+    validate_data,
     trainer,
-    # evaluator,
-    # validate_data,
-    # validate_model,
+    validate_data_model,
+    evaluate_model,
     export_onnx,
 ):
     """Training pipeline.
@@ -20,27 +20,35 @@ def training_pipeline(
     Steps
     1. download_data: This step downloads the data from the S3 bucket, bringing it into the pipeline
     2. create_data_loader: This step create a dataloaders for train, val and test datasets.
-    3. trainer: This step trains a pytorch model using the datasets.
-    4. evaluation:
-    5. validate_data:
-    6. validate_model:
+    3. validate_data: This step performs data integrity check on train, val and test datasets.
+    4. trainer: This step trains a pytorch model using the datasets.
+    5. evaluation: This step evaluates the trained model using the test dataset.
+    6. validate_data_model: This step performs data and model validation using trained model.
     7. export_onnx: Export trained pytorch model to onnx
 
     Args:
         download_data: This step downloads the data from the S3 bucket
-        create_data_loader: This step create a dataloaders for train, val and test datasets.
+        create_data_loader: This step create a dataloaders for train, val and test datasets
+        validate_data: This step performs data integrity check on train, val and test datasets
         trainer: This step trains a pytorch model using the datasets
+        validate_data_model: This step performs data and model validation using trained model
+        evaluate_model: This step evaluates the trained model using the test dataset.
         export_onnx : Export trained pytorch model to onnx
     """
-    # specify the order - we need the data to be downloaded before creating
+    # Specify the order - we need the data to be downloaded before creating
     # dataloaders from it
     create_data_loader.after(download_data)
+    trainer.after(validate_data)
+    validate_data_model.after(trainer)
 
-    # download the data from the S3 bucket
+    # Download the data from the S3 bucket
     download_data()
 
     # Create train, val and test dataloaders
     train_loader, val_loader, test_loader, classes = create_data_loader()
+
+    # Run deepchecks on the datasets
+    validate_data(train_loader, val_loader, test_loader, classes)
 
     # Train the model
     model = trainer(
@@ -48,13 +56,11 @@ def training_pipeline(
     )
 
     # Evaluate the model
-    # evaluator(model=model, test_loader=test_loader)
+    evaluate_model(model=model, test_loader=test_loader, classes=classes)
 
-    #
-    # validate_data()
+    # Validate data and model
+    validate_data_model(train_loader, test_loader, model, classes)
 
-    #
-    # validate_model()
+    # Export trained pytorch model to onnx
+    export_onnx(model=model)
 
-    # export trained pytorch model to onnx
-    onnx_bytes = export_onnx(model=model)

@@ -3,10 +3,11 @@ run_name: "dobble-run-1"
 settings:
   docker:
     build_context_root: .
+    required_integrations: ["pytorch", "mlflow"]
     requirements:
+      - boto3==1.25.3
       - pillow==9.2.0
       - labelbox[data]==3.27.2
-      - boto3==1.25.3
   # set mlflow experiment to be used by all steps settings here
   experiment_tracker.mlflow:
     experiment_name: "dobble-exp-1"

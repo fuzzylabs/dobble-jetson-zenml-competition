@@ -1,147 +1,151 @@
-# ZenML Competition
+# The Dobblegängers Month of MLOps Submission
 
-# Setup
+This repository contains The Dobblegängers (a.k.a., Fuzzy Labs) submission to [ZenML Month of MLOps competition](https://zenml.notion.site/ZenML-s-Month-of-MLOps-Competition-Announcement-3c59f628447c48f1944035de85ff1a5f)
 
-## One-time setup
+## Contents
 
-1. Create a virtual environment (conda, pip, virtualenv, poetry) and activate it. Recommened python version 3.8
+- [The Dobblegängers](#the-dobblegängers)
+- [What have we done?](#what-have-we-done)
+- [Code & Repository Structure](#code--repository-structure)
+- [Project Overview](#project-overview)
+- [Setup](#setup)
+- [Running the Pipelines](#running-the-pipelines)
+- [Blog Posts & Demo](#blog-posts--demo)
+ 
 
-2. Inside the virtual environment, install requirements and pre-commit required for setting up the project.
+## The Dobblegängers
 
-    ```bash
-    pip install -r setup-requirements.txt
-    pre-commit install
-    ```
+1. [Misha Iakovlev](https://github.com/d-lowl)
+2. [Shubham Gandhi](https://github.com/dudeperf3ct)
+3. [Oscar Wong](https://github.com/osw282)
+4. [Christopher Norman](https://github.com/Christopher-Norman)
+5. [Jon Carlton](https://github.com/JonoCX)
 
-    Or with Conda
+## What have we done?
 
-    ```bash
-    conda install -c conda-forge pre-commit
-    ```
+At [Fuzzy Labs](https://www.fuzzylabs.ai/) we're trying to become Dobble world champions. So, we came up with a plan - we've trained an ML model to recognise the common symbol between two cards, and what better way to make it than with a ZenML pipeline.
 
-    This will install different tools that we use for pre-commit hooks.
+If you're reading this and wondering: what on earth is [Dobble](https://www.dobblegame.com/en/games/)? Let us explain. It's a game of speed and observation where the aim is to be the quickest to identify the common symbol between two cards. If you're the first to find it and name it, then you win the card. Simple, right? It essence, it's a more sophisticated version of snap.
 
-3. `pre-commit` hooks will run whenever we run `git commit -m` command. To skip some of the checks run
+Now that you're all caught up, let's go into a little more detail about what we've done. Obviously as we're wanting to win the world championships, we need a concealable device. So, to also provide an extra challenge, we decided to deploy our model to a [NVIDIA Jetson Nano](https://www.nvidia.com/en-gb/autonomous-machines/embedded-systems/jetson-nano/education-projects/).
 
-    ```bash
-    SKIP=flake8 git commit -m "foo"
-    ```
+## Code & Repository Structure
 
-    To run pre-commit before commiting changes, run
-
-    ```bash
-    pre-commit run --all-files
-    ```
-
-    To check individual fails, run the following commands for particular pre-commit
-
-    Interrogate pre-commit
-
-    ```bash
-    interrogate -c pyproject.toml -vv
-    ```
-
-    Flake8 pre-commit
-
-    ```bash
-    flake8 .
-    ```
-
-    isort pre-commit
-
-    ```bash
-    isort . --settings-path=pyproject.toml
-    ```
-
-    Black pre-commit
-
-    ```bash
-    black . --config pyproject.toml --check
-    ```
-
-    pydocstyle pre-commit, list of [error codes](https://www.pydocstyle.org/en/stable/error_codes.html)
-
-    ```bash
-    pydocstyle .  -e --count --convention=google --add-ignore=D403
-    ```
-
-    darglint pre-commit, list of [error codes](https://github.com/terrencepreilly/darglint#error-codes)
-
-    ```bash
-    darglint -v 2 .
-    ```
-
-## ZenML Setup Local
-
-Directory Structure
+This repository contains all the code and resources to set up and run a data pipeline, training pipeline, and inference on the Jetson. It's structured as follows:
 
 ```bash
 .
 ├── LICENSE
 ├── pyproject.toml
 ├── README.md
-├── requirements.txt                 # dependencies required for zenml project
-├── setup-requirements.txt           # dependencies required for precommit
-├── pipelines                  # all pipelines inside this folder
+├── requirements.txt                        # dependencies required for the project
+├── docs                                    # detailed documentation for the project
+├── pipelines                               # all pipelines inside this folder
 │   └── training_pipeline
         └── training_pipeline.py
-        └── config_training_pipeline.yaml  # each pipeline will have one config file containing information regarding step and other configuration
-├── run.py                     # main file where all pipelines can be run
-└── steps                      # all steps inside this folder
-    └── data_preprocess
+        └── config_training_pipeline.yaml   # each pipeline will have one config file containing information regarding step and other configuration
+├── run.py                                  # main file where all pipelines can be run
+└── steps                                   # all steps inside this folder
+    └── data_preprocess                     # each step is in its own folder (as per ZenML best practises)
         └── data_preprocess_step.py
-    └── src                    # extra utilities that are required by steps added in this folder
+    └── src                                 # extra utilities that are required by steps added in this folder
+└── zenml_stack_recipes                     # contains the modified aws-minimal stack recipe
 
 ```
 
-1. Use the same virtual environment created in above step(conda, pip, virtualenv, poetry).
+As we've also used some cloud resources to store data and host experiment tracking, we used one of the ZenML stack recipes. There's more information on this [here](docs/stack_recipe_readme.md).
 
-2. Install requirements inside the already created environment
+## Project Overview
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+To give an overview of our solution (see [here](docs/pipelines_overview.md) for an in-depth description), we've broken this challenge down into three stages, with two pipelines:
 
-3. Running ZenML Locally
+### [Data Pipeline](docs/pipelines_overview.md#data-pipeline)
 
-    Install ZenML integrations required for the project
+This downloads the labelled data, processes it into the correct format for training, and uploads to an S3 bucket.
 
-    ```bash
-    zenml integration install -y pytorch mlflow
-    ```
+### [Training Pipeline](docs/pipelines_overview.md#training-pipeline)
 
-    Initialize ZenML repo
+This pipeline downloads the data, validates the data, trains and evaluates a model, and exports to the correct format for deployment.
 
-    ```bash
-    zenml init
-    ```
+### Deployment Stage
 
-    Start ZenServer
+Here, the trained model is loaded onto the device and inference is performed in real-time
 
-    ```bash
-    zenml up   # start ZenServer
-    ```
+## Setup
 
-    > **Note**
-    > Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
-    > If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again, for MacOS, run `kill $(lsof -t -i:8237)`.
+The first step is creating a virtual environment and install the project requirements, we've used `conda` but feel free to use whatever you prefer (as long as you can install a set of requirements):
 
-    By default zenml comes with a stack that runs locally. We will add mlflow as experiment tracker to this local stack. We use this stack to test pipelines locally.
+```bash
+conda create -n dobble_venv python=3.8 -y
+pip install -r requirements.txt
+```
 
-    ```bash
-    zenml experiment-tracker register mlflow_tracker --flavor=mlflow
-    zenml stack register fuzzy_stack \
-        -a default \
-        -o default \
-        -e mlflow_tracker \
-        --set
-    ```
+The next step is to setup ZenML, with the first step being to install the required integrations:
 
-    > **Note**
-    > If there stack already exists by checking `zenml stack list`, activate the stack by running `zenml stack set fuzzy_stack`.
+```bash
+zenml integrations install -y pytorch mlflow
+```
 
-    Run ZenML pipelines.
+Initialise the ZenML repository
 
-    ```bash
-    python3 run.py -dp -tp
-    ```
+```bash
+zenml init
+```
+
+Start the ZenServer
+
+```bash
+zenml up
+```
+
+> **Note**
+> Visit  ZenML dashboard is available at 'http://127.0.0.1:8237'. You can connect to it using the 'default' username and an empty password.
+> If there's a TCP error about port not being available. Run `fuser -k port_no/tcp` to close an open port and run `zenml up` command again, for MacOS, run `kill $(lsof -t -i:8237)`.
+
+By default, ZenML comes with a stack which runs locally. Next, we add MLflow as an experiment tracker to this local stack, which is we'll run the pipelines:
+
+```bash
+zenml experiment-tracker register mlflow_tracker --flavor=mlflow
+zenml stack register fuzzy_stack \
+    -a default \
+    -o default \
+    -e mlflow_tracker \
+    --set
+```
+
+You're now in a position where you can run the pipelines locally.
+
+## Running the Pipelines
+
+We have a couple of options for running the pipelines, specified by flags:
+
+```bash
+python run.py -dp       # run the data pipeline only
+python run.py -tp       # run the training pipeline only
+python run.py -dp -tp   # run both the data and training pipelines
+```
+
+## Setup using the Stack Recipe
+
+Please see [here](docs/stack_recipe_readme.md) for a detailed guide on what we've modified in the `aws-minimal` stack recipe and how to run it
+
+## Blog Posts & Demo
+
+As part of our submission, we've written a series of blogs on our website. Each of the blogs has an accompanying video.
+
+### Introduction
+
+https://www.youtube.com/watch?v=j9TAVpM5NRQ
+
+### About the Edge
+
+https://www.youtube.com/watch?v=djliB4QnuoQ
+
+### The Data Science
+
+Video: https://www.youtube.com/watch?v=gCAzpyE0Zr8
+Blog: https://www.fuzzylabs.ai/blog-post/zenmls-month-of-mlops-data-science-edition
+
+### Pipelines on the Edge
+
+Blog: https://www.fuzzylabs.ai/blog-post/mlops-pipeline-on-the-edge 

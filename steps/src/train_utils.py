@@ -1,11 +1,15 @@
-"""Training and Evaluation Loops."""
+"""Training and Evaluation utils."""
 import copy
 import math
 import os
+from functools import partial
 from typing import List
 
+import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
+import pandas as pd
+import seaborn as sn
 import torch
 from PIL import Image
 from rich import print
@@ -13,6 +17,14 @@ from rich.table import Table
 from torch import nn
 from torch.utils.data import DataLoader
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
+from torchvision.models import MobileNet_V3_Large_Weights, ResNet50_Weights
+from torchvision.models.detection import _utils as det_utils
+from torchvision.models.detection import (
+    fasterrcnn_mobilenet_v3_large_fpn,
+    fasterrcnn_resnet50_fpn,
+    ssdlite320_mobilenet_v3_large,
+)
+from torchvision.models.detection.ssdlite import SSDLiteClassificationHead
 from torchvision.utils import draw_bounding_boxes, make_grid
 from zenml.logger import get_logger
 
@@ -48,12 +60,13 @@ def get_image(x: torch.Tensor, mean: float, std: float) -> torch.Tensor:
     return torch.from_numpy(np_arr)
 
 
-def display_and_log_metric(metrics: dict, epoch: int):
+def display_and_log_metric(metrics: dict, is_val: bool, epoch: int = 1):
     """Display rich Table output by converting dict to table. It also logs metrics to mlflow.
 
     Args:
         metrics (dict): Dict containing metrics score for mAP and mAR.
-        epoch (int) : Current epoch
+        is_val (bool): Bool to state if the metrics are from validation or test datasets.
+        epoch (int): Current epoch
     """
     table = Table()
     row = []
@@ -62,9 +75,13 @@ def display_and_log_metric(metrics: dict, epoch: int):
     row += [str(np.round(v.item(), 4)) for v in list(metrics.values())]
     table.add_row(*row)
     print(table)
+    if is_val:
+        prefix = "val"
+    else:
+        prefix = "test"
     # log metrics to mlflow
     for k, v in metrics.items():
-        mlflow.log_metric(f"val_{k}", v.item(), epoch)
+        mlflow.log_metric(f"{prefix}_{k}", v.item(), epoch)
 
 
 def plot_bounding_box(
@@ -313,7 +330,7 @@ def test_one_epoch(
         - scores (``Tensor[N]``): the scores of each detection
 
     Args:
-        loader (DataLoader): PyTorch dataloder
+        loader (DataLoader) : PyTorch dataloder
         net (nn.Module) : PyTorch Model
         device (str) : string indicating whether device is cpu or gpu
         pred_folder (str) :  Path to predictions folder
@@ -338,6 +355,7 @@ def test_one_epoch(
             preds = net(images)
             # get mAP statistics
             metric.update(preds, targets)
+
             # save image, ground_truth and prediction in a grid
             if save_predictions:
                 plot_and_save_predictions(
@@ -350,3 +368,186 @@ def test_one_epoch(
                     unique_str=str(i),
                 )
     return metric.compute()
+
+
+def get_model(params, num_classes: int) -> nn.Module:
+    """Return a pytorch object detection model.
+
+    Args:
+        params (TrainerParameters): Parameters for training
+        num_classes (int): Number of classes in the dataset
+
+    Returns:
+        nn.Module: pytorch object detection model
+    """
+    if params.net == "fasterrcnn_mobilenet_v3_large_fpn":
+        model = fasterrcnn_mobilenet_v3_large_fpn(
+            weights=None,  # weights for fasterrccnn model
+            num_classes=num_classes,
+            weights_backbones=MobileNet_V3_Large_Weights.DEFAULT,  # pretrained backbone
+            image_mean=[0.485, 0.456, 0.406],  # same mean as backbone
+            image_std=[0.229, 0.224, 0.225],  # same std as trained by backbone
+        )
+    if params.net == "fasterrcnn_resnet50_fpn":
+        model = fasterrcnn_resnet50_fpn(
+            weights=None,  # weights for fasterrccnn model
+            num_classes=num_classes,
+            weights_backbones=ResNet50_Weights.DEFAULT,  # pretrained backbone
+            image_mean=[0.485, 0.456, 0.406],  # same mean as backbone
+            image_std=[0.229, 0.224, 0.225],  # same std as required by backbone
+        )
+    if params.net == "ssdlite320_mobilenet_v3_large":
+        if params.use_pretrained:
+            logger.info("Freezing backbone and ssd detection models")
+            model = ssdlite320_mobilenet_v3_large(
+                pretrained=True
+            )  # both backbone and detection pretrained
+            in_channels = det_utils.retrieve_out_channels(
+                model.backbone, (320, 320)
+            )  # get input channels
+            num_anchors = (
+                model.anchor_generator.num_anchors_per_location()
+            )  # number of anchors
+            norm_layer = partial(
+                nn.BatchNorm2d, eps=0.001, momentum=0.03
+            )  # batchnorm layer
+            # add a classification head on top with `num_classes` as output
+            model.head.classification_head = SSDLiteClassificationHead(
+                in_channels, num_anchors, num_classes, norm_layer
+            )
+        else:
+            model = ssdlite320_mobilenet_v3_large(
+                weights=None,  # weights for ssdlite320 model
+                num_classes=num_classes,
+                weights_backbones=MobileNet_V3_Large_Weights.DEFAULT,  # pretrained backbone
+            )
+    return model
+
+
+def test_model(loader: DataLoader, net: nn.Module, device: str) -> tuple:
+    """Get the mean average precision metrics for a specified dataset. It returns a dictionary containing metrics. Also returns the models predictions and bounding boxes for the predictions.
+
+    During inference, the model requires only the input tensors, and returns the post-processed
+    predictions as a ``List[Dict[Tensor]]``, one for each input image. The fields of the ``Dict`` are as
+    follows, where ``N`` is the number of detections:
+        - boxes (``FloatTensor[N, 4]``): the predicted boxes in ``[x1, y1, x2, y2]`` format, with
+        ``0 <= x1 < x2 <= W`` and ``0 <= y1 < y2 <= H``.
+        - labels (``Int64Tensor[N]``): the predicted labels for each detection
+        - scores (``Tensor[N]``): the scores of each detection
+
+    Args:
+        loader (DataLoader) : PyTorch dataloder
+        net (nn.Module) : PyTorch Model
+        device : str indicating whether device is cpu or gpu
+
+    Returns:
+        dict : Dictionary of mean average precision metrics calculated.
+        targets: list of targets bounding boxes and labels
+        preds: list of predicted bounding boxes and labels
+    """
+    net.eval()
+    metric = MeanAveragePrecision()
+    for _, data in enumerate(loader):
+        # move input and labels to device
+        images = list(image.to(device) for image in data[0])
+        targets = [{k: v.to(device) for k, v in t.items()} for t in data[1]]
+
+        # Print performance statistics
+        with torch.no_grad():
+            # perform inference
+            preds = net(images)
+            # get mAP statistics
+            metric.update(preds, targets)
+
+    return metric.compute(), targets, preds
+
+
+def compute_iou(boxA: list, boxB: list) -> float:
+    """Computes the intersection over union metric for two lists containing coordinates of a rectangle.
+
+    Args:
+        boxA (list): First box's coordinates
+        boxB (list): Second box's coordinates
+
+    Returns:
+        iou (float): Intersection over union metric value
+    """
+    # Determine the (x, y)-coordinates of the intersection rectangle
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[2], boxB[2])
+    yB = min(boxA[3], boxB[3])
+
+    # Compute the area of intersection rectangle
+    intersection_area = abs(max((xB - xA, 0)) * max((yB - yA), 0))
+    if intersection_area == 0:
+        return 0
+    # Compute the area of both the prediction and ground-truth
+    # rectangles
+    boxA_area = abs((boxA[2] - boxA[0]) * (boxA[3] - boxA[1]))
+    boxB_area = abs((boxB[2] - boxB[0]) * (boxB[3] - boxB[1]))
+
+    # Compute the intersection over union by taking the intersection
+    # area and dividing it by union
+    iou = intersection_area / float(boxA_area + boxB_area - intersection_area)
+
+    return iou
+
+
+def create_confusion_matrix(
+    preds: list, targets: list, iou_cutoff: float, classes: list
+) -> plt.figure:
+    """Creates a confusion matrix for a set of object bounding box predictions.
+
+    Args:
+        preds (list): List of dictionaries for predictions for each image.
+        targets (list): List of of dictionaries for true values for each image.
+        iou_cutoff (float): IoU cutoff value
+        classes (list): List of the class names
+
+    Returns:
+        fig (plt.figure): PyPlot fig of the resulting confusion matrix.
+    """
+    pairs = []  # Pairs of (true, predicted) labels
+    # Loop through each image
+    for i in range(len(preds)):
+        true_used = [False] * 8
+        # Loop through each predicted box
+        for j in range(len(preds[i]["boxes"])):
+            found = False
+            pred_box = preds[i]["boxes"][j].tolist()
+            pred_box_label = preds[i]["labels"][j].item()
+            # Loop through each target and check if the IoU overlap is above the threshold
+            for k in range(len(targets[i]["boxes"])):
+                true_box = targets[i]["boxes"][k].tolist()
+                true_box_label = targets[i]["labels"][k].item()
+                if compute_iou(true_box, pred_box) >= iou_cutoff:
+                    pairs += [
+                        (classes[true_box_label], classes[pred_box_label])
+                    ]
+                    found = True
+                    true_used[k] = True
+                    break
+            if not found:
+                pairs += [("<nothing>", classes[pred_box_label])]
+
+        for used, true_box in zip(true_used, targets[i]["boxes"]):
+            if not used:
+                pairs += [(classes[true_box_label], "<nothing>")]
+
+    labels = classes + ["<nothing>"]
+
+    confusion_matrix = pd.DataFrame(
+        np.zeros((len(labels), len(labels))),
+        columns=pd.Index(labels, name="Predicted"),
+        index=pd.Index(labels, name="True"),
+        dtype=int,
+    )
+
+    for true, pred in pairs:
+        confusion_matrix.loc[true, pred] += 1
+
+    plt.figure(figsize=(25, 25))
+    sn.heatmap(confusion_matrix, annot=True)
+
+    return plt.gcf()
